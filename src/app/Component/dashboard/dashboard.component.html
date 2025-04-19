@@ -1,1 +1,100 @@
-<p>dashboard works!</p>
+<div class="  mx-auto px-4 mt-10">
+
+  <div class="flex flex-wrap justify-around gap-4 mb-5  pt-5 ">
+    <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
+      <h2 class="text-xl font-bold">Total Users</h2>
+      <h4 class="text-lg">1500</h4>
+      <h3 class="text-sm text-gray-600">15 instructors</h3>
+      <h3 class="text-sm text-gray-600">150 students</h3>
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
+      <h2 class="text-xl font-bold">Total Courses</h2>
+      <h4 class="text-lg">256</h4>
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
+      <h2 class="text-xl font-bold">Revenue</h2>
+      <h4 class="text-lg">$12,866</h4>
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
+      <h2 class="text-xl font-bold">Average Rating</h2>
+      <h4 class="text-lg">4.6</h4>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="flex flex-wrap justify-around gap-4 mb-5">
+    <div class="bg-white shadow-md rounded-lg p-4 w-full sm:w-[48%] md:w-[49%] h-[300px]" [chart]="Linecharts">
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-4 w-full sm:w-[48%] md:w-[49%] h-[300px]" [chart]="testchart">
+    </div>
+  </div>
+
+
+  <div class="flex flex-wrap justify-around gap-4 mb-10">
+    <!-- Enrollments Table -->
+    <div class="w-full md:w-[48%]">
+      <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+        <table class="table-auto w-full text-left border-collapse border border-gray-200 text-[15px]">
+          <caption class="text-xl font-semibold text-gray-800 mb-4 caption-top">Latest Enrollments</caption>
+          <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
+            <tr>
+              <th class="px-4 py-3 border-b border-gray-200">Student</th>
+              <th class="px-4 py-3 border-b border-gray-200">Course</th>
+              <th class="px-4 py-3 border-b border-gray-200">Date</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600">
+            <tr class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
+              <td class="px-4 py-3 border-b border-gray-200">Python for Beginners</td>
+              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
+              <td class="px-4 py-3 border-b border-gray-200">Python for Beginners</td>
+              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
+              <td class="px-4 py-3 border-b border-gray-200">Python for Beginners</td>
+              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Courses Table -->
+    <div class="w-full md:w-[48%]">
+      <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+        <table class="table-auto w-full text-left border-collapse border border-gray-200 text-[15px]">
+          <caption class="text-xl font-semibold text-gray-800 mb-4 caption-top">Latest Courses</caption>
+          <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
+            <tr>
+              <th class="px-4 py-3 border-b border-gray-200">Instructors</th>
+              <th class="px-4 py-3 border-b border-gray-200">Course</th>
+              <th class="px-4 py-3 border-b border-gray-200">Date</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600">
+            <tr class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
+              <td class="px-4 py-3 border-b border-gray-200">Mern for Beginners</td>
+              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
+              <td class="px-4 py-3 border-b border-gray-200">.Net for Beginners</td>
+              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+            </tr>
+            <tr class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
+              <td class="px-4 py-3 border-b border-gray-200">Front for Beginners</td>
+              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

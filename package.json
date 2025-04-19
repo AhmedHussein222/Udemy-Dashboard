@@ -18,6 +18,10 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
+    "angular-highcharts": "^17.0.1",
+    "chart.js": "^4.4.9",
+    "flowbite": "^3.1.2",
+    "highcharts": "^12.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
