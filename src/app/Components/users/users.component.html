@@ -1,0 +1,55 @@
+<div class="users-container">
+  <h1>Users List</h1>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr class="bg-gray-100">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Name
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Email
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Role
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Bio
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let user of users | async; trackBy: trackByEmail">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">
+              {{ user.first_name }} {{ user.last_name }}
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-500">{{ user.email }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-500">{{ user.role }}</div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-500">{{ user.bio }}</div>
+          </td>
+        </tr>
+        <tr *ngIf="(users | async)?.length === 0">
+          <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+            No users found.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
