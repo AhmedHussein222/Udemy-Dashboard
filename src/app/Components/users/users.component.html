@@ -1,8 +1,37 @@
-<div class="users-container">
-  <h1>Users List</h1>
+<div class="users-container p-1.5 box-border">
+  <h1 class="text-3xl font-bold ps-2">Users</h1>
+  <div class="my-4 flex flex-col lg:flex-row gap-4">
+    <!-- بطاقات الإحصائيات -->
+    <div
+      class="lg:w-1/2 h-fit bg-gray-100 rounded-xl shadow-md grid grid-cols-2 gap-5 p-2"
+    >
+      <div class="bg-white p-6 font-bold rounded-lg border border-blue-100">
+        <div class="text-blue-600 font-bold mb-2">Total Users</div>
+        <div class="text-3xl font-bold text-gray-800">1.532</div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg border border-green-100">
+        <div class="text-green-600 font-semibold mb-2">Instructors</div>
+        <div class="text-3xl font-bold text-gray-800">198</div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg border col-span-2 border-purple-100">
+        <div class="text-purple-600 font-semibold mb-2">Students</div>
+        <div class="text-3xl font-bold text-gray-800">1.319</div>
+      </div>
+    </div>
+
+    <!-- الرسم البياني -->
+    <div class="lg:w-1/2 bg-white rounded-xl shadow-md h-1/4 p-4">
+      <div class="h-70" [chart]="testchart"></div>
+    </div>
+  </div>
 
   <div class="overflow-x-auto">
-    <table class="min-w-full bg-white">
+    <table class="min-w-full bg-white font-bold">
+      <caption class="text-lg font-medium text-gray-900 mb-4">
+        Students
+      </caption>
       <thead>
         <tr class="bg-gray-100">
           <th
@@ -25,10 +54,16 @@
           >
             Bio
           </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Enrollment
+          </th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let user of users | async; trackBy: trackByEmail">
+        @for ( user of users ; track user.email ) {
+        <tr>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="text-sm font-medium text-gray-900">
               {{ user.first_name }} {{ user.last_name }}
@@ -44,11 +79,14 @@
             <div class="text-sm text-gray-500">{{ user.bio }}</div>
           </td>
         </tr>
-        <tr *ngIf="(users | async)?.length === 0">
+
+        }@empty {
+        <tr>
           <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
             No users found.
           </td>
         </tr>
+        }
       </tbody>
     </table>
   </div>

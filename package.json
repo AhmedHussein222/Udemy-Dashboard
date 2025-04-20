@@ -21,7 +21,9 @@
     "@angular/router": "^19.1.0",
     "@ngneat/tailwind": "^7.0.3",
     "@tailwindcss/postcss": "^4.1.4",
+    "angular-highcharts": "^17.0.1",
     "firebase": "^11.6.0",
+    "highcharts": "^12.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
