@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './Component/dashboard/dashboard.component';
-import { NavbarComponent } from './Component/navbar/navbar.component';
-import { NotFoundComponent } from './Component/not-found/not-found.component';
+import { DashboardComponent } from './Components/dashboard/dashboard.component';
+import { NavbarComponent } from './Components/navbar/navbar.component';
+import { NotFoundComponent } from './Components/not-found/not-found.component';
 
 export const routes: Routes = [
 
