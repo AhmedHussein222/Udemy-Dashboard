@@ -1,6 +1,5 @@
-import { CommonModule, NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({

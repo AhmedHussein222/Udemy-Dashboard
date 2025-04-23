@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Chart, ChartModule } from 'angular-highcharts';
 import { Iuser } from '../../Models/iuser/iuser';
 import { UsersService } from '../../Services/users.service';
@@ -9,7 +8,7 @@ import { UsersService } from '../../Services/users.service';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent {
   private firestore = inject(UsersService);
   users!: Iuser[];
 
@@ -33,7 +32,6 @@ export class UsersComponent implements OnInit {
       },
     ],
   });
-  ngOnInit(): void {}
 
   trackByEmail(index: number, user: any): string {
     return user.email;
