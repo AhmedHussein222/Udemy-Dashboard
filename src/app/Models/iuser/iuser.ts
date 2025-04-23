@@ -6,6 +6,7 @@ export interface Iuser {
   bio: string;
   role: string;
   createAt: Date;
+  profile_picture: string;
   links?: {
     linkedin?: string;
     facebook?: string;

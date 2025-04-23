@@ -1,7 +1,10 @@
-<div class="users-container p-1.5 box-border">
+<div class="users-container p-1.5 box-border mt-15">
   <h1 class="text-3xl font-bold ps-2">Users</h1>
+
+  
+
   <div class="my-4 flex flex-col lg:flex-row gap-4">
-    <!-- بطاقات الإحصائيات -->
+    
     <div
       class="lg:w-1/2 h-fit bg-gray-100 rounded-xl shadow-md grid grid-cols-2 gap-5 p-2"
     >
@@ -30,7 +33,7 @@
   <div class="overflow-x-auto">
     <table class="min-w-full bg-white font-bold">
       <caption class="text-lg font-medium text-gray-900 mb-4">
-        Students
+        Users
       </caption>
       <thead>
         <tr class="bg-gray-100">
@@ -45,9 +48,25 @@
             Email
           </th>
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 flex text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
-            Role
+            <div class="flex items-center">
+              <select
+                id="roleFilter"
+                class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border border-gray-300 
+                       focus:outline-none focus:ring-blue-500 focus:border-blue-500 
+                       sm:text-sm rounded-md bg-white shadow-sm transition duration-150 
+                       ease-in-out hover:border-blue-400"
+                [(ngModel)]="selectedRole"
+                (change)="filteredUsers()"
+              >
+                <option value="" selected>Role</option>
+                <option *ngFor="let role of roles" [value]="role" class="py-1">
+                  {{ role }}
+                </option>
+              </select>
+              <i class="fas fa-filter ml-2 text-gray-500"></i>
+            </div>
           </th>
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -62,11 +81,18 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        @for ( user of users ; track user.email ) {
-        <tr>
+        <tr *ngFor="let user of filteredUsers(); trackBy: trackByEmail">
           <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900">
-              {{ user.first_name }} {{ user.last_name }}
+            <div class="text-sm flex font-medium text-gray-900">
+              <img
+                class="w-10 h-10 rounded-full"
+                src="{{ user.profile_picture }}"
+                alt="User Profile Picture"
+                onerror="this.onerror=null; this.src='assets/images/default_profile.png'"
+              />
+              <p class="my-auto ml-1 text-sm font-medium text-gray-900">
+                {{ user.first_name }} {{ user.last_name }}
+              </p>
             </div>
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
@@ -78,15 +104,15 @@
           <td class="px-6 py-4">
             <div class="text-sm text-gray-500">{{ user.bio }}</div>
           </td>
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-500">5</div>
+          </td>
         </tr>
-
-        }@empty {
-        <tr>
-          <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+        <tr *ngIf="filteredUsers.length === 0">
+          <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
             No users found.
           </td>
         </tr>
-        }
       </tbody>
     </table>
   </div>
