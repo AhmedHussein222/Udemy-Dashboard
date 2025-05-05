@@ -1,35 +1,30 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Chart, ChartModule } from 'angular-highcharts';
 import { Iuser } from '../../Models/iuser/iuser';
 import { UsersService } from '../../Services/users.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-users',
-  imports: [ ChartModule ,CommonModule , FormsModule],
+  imports: [ChartModule, CommonModule, FormsModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent {
   private firestore = inject(UsersService);
-  
+
   users!: Iuser[];
-  roles = ["student","instructor","admin"]
-  selectedRole = ""
+  roles = ['student', 'instructor', 'admin'];
+  selectedRole = '';
 
   filteredUsers() {
-    if (this.selectedRole) {  
-
-      return this.users.filter(user => user.role === this.selectedRole);}
-
-    else {
-
+    if (this.selectedRole) {
+      return this.users.filter((user) => user.role === this.selectedRole);
+    } else {
       return this.users;
-
     }
   }
-  
-    
+
   constructor() {
     // this.users = this.firestore.getAll('Users')
     this.firestore.getAll('Users').subscribe((data) => {
@@ -37,9 +32,6 @@ export class UsersComponent {
     });
 
   }
-
-
-
 
   testchart = new Chart({
     title: { text: 'Users by Role' },
