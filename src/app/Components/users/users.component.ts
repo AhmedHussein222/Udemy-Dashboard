@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Chart, ChartModule } from 'angular-highcharts';
 import { Iuser } from '../../Models/iuser/iuser';
 import { UsersService } from '../../Services/users.service';
+
 @Component({
   selector: 'app-users',
-  imports: [ ChartModule],
+  imports: [ChartModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
@@ -18,7 +18,6 @@ export class UsersComponent implements OnInit {
     this.firestore.getAll('Users').subscribe((data) => {
       this.users = data;
     });
-
   }
   testchart = new Chart({
     title: { text: 'Users by Role' },
@@ -32,6 +31,9 @@ export class UsersComponent implements OnInit {
         ],
       },
     ],
+    accessibility: {
+      enabled: false, // Disable accessibility warnings
+    },
   });
   ngOnInit(): void {}
 

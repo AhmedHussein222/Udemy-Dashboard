@@ -1,0 +1,160 @@
+      <h2 class="text-xl font-bold mb-4">Settings</h2>
+      <div class="bg-white p-4 shadow rounded">
+        <!-- Tab Navigation -->
+        <div class="flex border-b mb-4">
+          <button
+            *ngFor="let tab of settingsTabs; let i = index"
+            class="px-4 py-2 text-sm font-medium"
+            [class.border-b-2]="activeTab === i"
+            [class.border-[#892de1]]="activeTab === i"
+            [class.text-[#892de1]]="activeTab === i"
+            (click)="activeTab = i"
+          >
+            {{ tab }}
+          </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div *ngIf="activeTab === 0">
+          <!-- General Tab -->
+          <form
+            [formGroup]="generalSettingsForm"
+            (ngSubmit)="saveGeneralSettings()"
+          >
+            <label class="block mb-2 font-bold">Site Title</label>
+            <input
+              type="text"
+              formControlName="siteTitle"
+              class="w-full border rounded p-2 mb-4"
+              placeholder="Enter site title"
+            />
+            <label class="block mb-2 font-bold">Logo Upload</label>
+            <input
+              type="file"
+              formControlName="logo"
+              class="w-full border rounded p-2 mb-4"
+            />
+            <label class="block mb-2 font-bold">Language</label>
+            <select
+              formControlName="language"
+              class="w-full border rounded p-2 mb-4"
+            >
+              <option *ngFor="let lang of languages" [value]="lang">
+                {{ lang }}
+              </option>
+            </select>
+            <label class="block mb-2 font-bold">Terms of Service</label>
+            <textarea
+              formControlName="tos"
+              class="w-full border rounded p-2 mb-4"
+              placeholder="Enter terms of service"
+            ></textarea>
+            <button
+              type="submit"
+              class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3]"
+            >
+              Save
+            </button>
+          </form>
+        </div>
+
+        <div *ngIf="activeTab === 1">
+          <!-- User Permissions Tab -->
+          <p class="font-bold mb-2">Role Matrix</p>
+          <table class="w-full border mb-4">
+            <thead>
+              <tr>
+                <th class="p-2 border">Role</th>
+                <th class="p-2 border">Permissions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let role of roles">
+                <td class="p-2 border">{{ role.name }}</td>
+                <td class="p-2 border">
+                  <div
+                    *ngFor="let perm of role.permissions"
+                    class="flex items-center gap-2"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="perm.enabled"
+                      (change)="togglePermission(role.name, perm.name)"
+                    />
+                    <span>{{ perm.name }}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Add Admin by Email -->
+          <div class="mt-4">
+            <label class="block mb-2 font-bold">Add New Admin</label>
+            <div class="flex gap-2">
+              <input
+                type="email"
+                [(ngModel)]="newAdminEmail"
+                placeholder="Enter admin email"
+                class="w-full border rounded p-2"
+              />
+              <button
+                class="px-4 py-2 bg-[#892de1] text-white rounded hover:bg-[#6b1bb3]"
+                (click)="addAdmin(newAdminEmail)"
+              >
+                Add Admin
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="activeTab === 2">
+          <!-- Course Policies Tab -->
+          <p class="font-bold mb-2">Approval Workflow</p>
+          <textarea
+            formControlName="approvalWorkflow"
+            class="w-full border rounded p-2 mb-4"
+            placeholder="Enter approval workflow"
+          ></textarea>
+          <p class="font-bold mb-2">Rating Settings</p>
+          <input
+            type="number"
+            formControlName="ratingThreshold"
+            class="w-full border rounded p-2 mb-4"
+            placeholder="Enter rating threshold"
+          />
+        </div>
+
+        <div *ngIf="activeTab === 3">
+          <!-- Security Tab -->
+          <p class="font-bold mb-2">2FA Enforcement</p>
+          <input type="checkbox" formControlName="twoFactorAuth" class="mb-4" />
+          Enable 2FA
+          <p class="font-bold mb-2">Session Timeout</p>
+          <input
+            type="number"
+            formControlName="sessionTimeout"
+            class="w-full border rounded p-2 mb-4"
+            placeholder="Enter session timeout (minutes)"
+          />
+        </div>
+
+        <div *ngIf="activeTab === 4">
+          <!-- Customization Tab -->
+          <p class="font-bold mb-2">Theme</p>
+          <select
+            formControlName="theme"
+            class="w-full border rounded p-2 mb-4"
+          >
+            <option *ngFor="let theme of themes" [value]="theme">
+              {{ theme }}
+            </option>
+          </select>
+          <label class="block mb-2 font-bold">SEO Title</label>
+          <input
+            type="text"
+            formControlName="seoTitle"
+            class="w-full border rounded p-2 mb-4"
+            placeholder="Enter SEO title"
+          />
+        </div>
+      </div>

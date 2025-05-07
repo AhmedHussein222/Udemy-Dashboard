@@ -1,0 +1,64 @@
+<div class="grid grid-cols-3 gap-4">
+  <div class="bg-white p-4 shadow rounded">
+    <h3 class="text-lg font-bold">Users</h3>
+    <p class="text-2xl">{{ (users$ | async)?.length || 0 }}</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded">
+    <h3 class="text-lg font-bold">Revenue</h3>
+    <p class="text-2xl">${{ (revenue$ | async) || 0 }}</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded">
+    <h3 class="text-lg font-bold">Courses</h3>
+    <p class="text-2xl">{{ (courses$ | async)?.length || 0 }}</p>
+  </div>
+</div>
+
+<div class="mt-6">
+  <h2 class="text-xl font-bold mb-4">Recent Orders</h2>
+  <table class="w-full bg-white shadow rounded">
+    <thead>
+      <tr>
+        <th class="p-4 text-left">Order ID</th>
+        <th class="p-4 text-left">User</th>
+        <th class="p-4 text-left">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Example: Replace with dynamic data -->
+      <tr>
+        <td class="p-4">#12345</td>
+        <td class="p-4">John Doe</td>
+        <td class="p-4">$100</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <h2 class="text-xl font-bold mb-4">Courses Management</h2>
+  <table class="w-full bg-white shadow rounded">
+    <thead>
+      <tr>
+        <th class="p-4 text-left">Course ID</th>
+        <th class="p-4 text-left">Title</th>
+        <th class="p-4 text-left">Instructor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Example: Replace with dynamic data -->
+      <tr>
+        <td class="p-4">#101</td>
+        <td class="p-4">Angular Basics</td>
+        <td class="p-4">Jane Smith</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <h2 class="text-xl font-bold mb-4">Analytics</h2>
+  <div class="bg-white p-4 shadow rounded">
+    <!-- Placeholder for charts -->
+    <p>Charts will go here</p>
+  </div>
+</div>
