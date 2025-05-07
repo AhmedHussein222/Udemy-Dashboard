@@ -1,24 +1,45 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Chart, ChartModule } from 'angular-highcharts';
 import { Iuser } from '../../Models/iuser/iuser';
 import { UsersService } from '../../Services/users.service';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-users',
-  imports: [ChartModule],
+  imports: [ ChartModule ,CommonModule , FormsModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent {
   private firestore = inject(UsersService);
+  
   users!: Iuser[];
+  roles = ["student","instructor","admin"]
+  selectedRole = ""
 
+  filteredUsers() {
+    if (this.selectedRole) {  
+
+      return this.users.filter(user => user.role === this.selectedRole);}
+
+    else {
+
+      return this.users;
+
+    }
+  }
+  
+    
   constructor() {
     // this.users = this.firestore.getAll('Users')
     this.firestore.getAll('Users').subscribe((data) => {
       this.users = data;
     });
   }
+
+
+
+
   testchart = new Chart({
     title: { text: 'Users by Role' },
     series: [
@@ -35,7 +56,6 @@ export class UsersComponent implements OnInit {
       enabled: false, // Disable accessibility warnings
     },
   });
-  ngOnInit(): void {}
 
   trackByEmail(index: number, user: any): string {
     return user.email;
