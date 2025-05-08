@@ -24,7 +24,7 @@ export class UsersService {
     return this.firestore
       .collection<Iuser>(this.collectionName)
       .doc(id)
-      .update({ ...data });
+      .update(data);
   }
   deleteUser(id: string): Promise<void> {
     return this.firestore
@@ -33,17 +33,5 @@ export class UsersService {
       .delete();
   }
 
-
   // جلب بيانات مع استعلام
-  query(
-    collectionName: string,
-    field: string,
-    condition: any,
-    value: any
-  ): Observable<any[]> {
-    return this.firestore
-      .collection(collectionName, (ref) => ref.where(field, condition, value))
-      .valueChanges({ idField: 'id' });
-  }
-
 }
