@@ -9,7 +9,7 @@ import { Ienrollment } from '../../Models/iuser/ienrollment';
 import { RevenueService } from '../../Services/revenue.service';
 import { RatingService } from '../../Services/rating.service';
 import { CommonModule } from '@angular/common';
-import { HighchartsChartModule } from 'highcharts-angular';
+// import { HighchartsChartModule } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
 
 import { catchError, combineLatest, forkJoin, map, of, switchMap } from 'rxjs';
@@ -19,7 +19,7 @@ import { IenrollmentWithNames } from '../../Models/ienrollmentnames';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,HighchartsChartModule],
+  // imports: [CommonModule,HighchartsChartModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

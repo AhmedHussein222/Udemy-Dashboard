@@ -1,36 +1,43 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-courses',
-  imports: [CommonModule ],
-  templateUrl: './courses.component.html',
-  styleUrl: './courses.component.css'
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './courses.component.html'
 })
 export class CoursesComponent {
-
   courses = [
     {
-      title: 'Angular Mastery',
-      instructor: 'John Doe',
-      image: 'https://via.placeholder.com/400x200?text=Angular+Course',
+      id: '1',
+      title: 'Angular Fundamentals',
+      description: 'Learn the basics of Angular and build real apps.',
+       author: 'Mohamed Ali'
     },
     {
-      title: 'React Essentials',
-      instructor: 'Jane Smith',
-      image: 'https://via.placeholder.com/400x200?text=React+Course',
+      id: '2',
+      title: 'Firebase with Angular',
+      description: 'Connect Angular apps with Firebase backend services.',
+       author: 'Mohamed Ali'
     },
+    {
+      id: '3',
+      title: 'Tailwind Design System',
+      description: 'Design faster using Tailwind’s utility classes.',
+       author: 'Mohamed Ali'
+    }
   ];
 
-  accept(course: any) {
-    console.log('Accepted:', course);
+  accept(id: string) {
+    console.log(`Accept: ${id}`);
+  }
+
+  delete(id: string) {
+    console.log(`Delete: ${id}`);
   }
 
   preview(course: any) {
-    console.log('Previewing:', course);
-  }
-
-  delete(course: any) {
-    console.log('Deleted:', course);
+    console.log('Preview course:', course);
   }
 }
