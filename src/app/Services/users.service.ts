@@ -33,6 +33,7 @@ export class UsersService {
       .delete();
   }
 
+
   // جلب بيانات مع استعلام
   query(
     collectionName: string,
@@ -44,4 +45,5 @@ export class UsersService {
       .collection(collectionName, (ref) => ref.where(field, condition, value))
       .valueChanges({ idField: 'id' });
   }
+
 }
