@@ -22,8 +22,9 @@
     "@ngneat/tailwind": "^7.0.3",
     "@tailwindcss/postcss": "^4.1.4",
     "angular-highcharts": "^17.0.1",
-    "firebase": "^11.6.0",
+    "firebase": "^11.6.1",
     "highcharts": "^12.2.0",
+    "highcharts-angular": "^4.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
