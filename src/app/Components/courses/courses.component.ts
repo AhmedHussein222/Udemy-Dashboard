@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UnpublishedCoursesService } from '../../Services/unpublished-courses.service';
+import { Icourse } from '../../Models/icourse';
+import { Observable } from 'rxjs';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-courses',
@@ -7,34 +11,69 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './courses.component.html'
 })
-export class CoursesComponent {
-  courses = [
-    {
-      id: '1',
-      title: 'Angular Fundamentals',
-      description: 'Learn the basics of Angular and build real apps.',
-       author: 'Mohamed Ali'
-    },
-    {
-      id: '2',
-      title: 'Firebase with Angular',
-      description: 'Connect Angular apps with Firebase backend services.',
-       author: 'Mohamed Ali'
-    },
-    {
-      id: '3',
-      title: 'Tailwind Design System',
-      description: 'Design faster using Tailwind’s utility classes.',
-       author: 'Mohamed Ali'
-    }
-  ];
+export class CoursesComponent implements OnInit {
+  courses$!: Observable<Icourse[]>;
 
-  accept(id: string) {
-    console.log(`Accept: ${id}`);
+
+  constructor(
+    private courseService: UnpublishedCoursesService, 
+    private firestore: AngularFirestore 
+  ) {}
+
+  // ngOnInit(): void {
+  //   console.log('🚀 Getting unpublished courses from Firestore...');
+    
+  //   this.courseService.getUnpublishedCourses().subscribe({
+  //     next: (courses) => {
+  //       console.log("🔥 Fetched courses:", courses);
+  //       this.courses$ = this.courseService.getUnpublishedCourses(); 
+  //     },
+  //     error: (err) => {
+  //       console.error("❌ Error fetching courses:", err);
+  //     }
+  //   });
+  // }
+  ngOnInit(): void {
+    console.log('🚀 Getting unpublished courses from Firestore...');
+    
+    this.courseService.getUnpublishedCourses().subscribe({
+      next: (courses) => {
+        console.log("🔥 Fetched courses:", courses);
+        this.courses$ = this.courseService.getUnpublishedCourses(); 
+      },
+      error: (err) => {
+        console.error("❌ Error fetching courses:", err);  
+      },
+      complete: () => {
+        console.log("✅ Observable completed.");
+      }
+    });
   }
+  
 
-  delete(id: string) {
-    console.log(`Delete: ${id}`);
+  
+
+ 
+  accept(courseId: string) {
+    this.firestore.collection('courses').doc(courseId).update({ is_published: true })
+      .then(() => {
+        console.log(`Course ${courseId} is now published`);
+       
+        this.courses$ = this.courseService.getUnpublishedCourses();
+      })
+      .catch((error) => {
+        console.error('Error updating course: ', error);
+      });
+  }
+  delete(courseId: string) {
+    this.firestore.collection('courses').doc(courseId).delete()
+      .then(() => {
+        console.log(`Course ${courseId} deleted`);
+        this.courses$ = this.courseService.getUnpublishedCourses();
+      })
+      .catch((error) => {
+        console.error('Error deleting course: ', error);
+      });
   }
 
   preview(course: any) {

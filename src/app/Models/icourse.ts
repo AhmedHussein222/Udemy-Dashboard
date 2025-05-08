@@ -2,6 +2,7 @@ export interface Icourse {
         created_at:Date;
         category_id: string;
         course_id: string;
+        thumbnail: string;
         description: string;
         discount: number;
         duration: number;

@@ -9,7 +9,7 @@ import { Ienrollment } from '../../Models/iuser/ienrollment';
 import { RevenueService } from '../../Services/revenue.service';
 import { RatingService } from '../../Services/rating.service';
 import { CommonModule } from '@angular/common';
-// import { HighchartsChartModule } from 'highcharts-angular';
+import { HighchartsChartModule } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
 
 import { catchError, combineLatest, forkJoin, map, of, switchMap } from 'rxjs';
@@ -19,7 +19,7 @@ import { IenrollmentWithNames } from '../../Models/ienrollmentnames';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  // imports: [CommonModule,HighchartsChartModule],
+  imports: [CommonModule,HighchartsChartModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit {
   usersLength:number = 0;
   coursesLength:number = 0;
   revenue: number = 0;
-  // latestEnrollments: Ienrollment[] = [];
+  latestEnrollments: Ienrollment[] = [];
   enrollmentsWithNames: IenrollmentWithNames[] = [];
   courses: Icourse[] = [];
   averageRating: number = 0
@@ -198,34 +198,34 @@ ngOnInit(): void {
 
 
   // // Enrollment Line Chart
-  // this.enrollmentService.getAll('Enrollments').subscribe(enrollments => {
-  //   const monthlyCounts = new Array(12).fill(0);
-  //   enrollments.forEach(enroll => {
-  //     if (enroll.enrolledAt) {
-  //       const date = (enroll.enrolledAt as any)?.toDate?.() || new Date(enroll.enrolledAt);
-  //       const month = date.getMonth();
-  //       monthlyCounts[month]++;
-  //     }
-  //   });
+  this.enrollmentService.getAll('Enrollments').subscribe(enrollments => {
+    const monthlyCounts = new Array(12).fill(0);
+    enrollments.forEach(enroll => {
+      if (enroll.enrolledAt) {
+        const date = (enroll.enrolledAt as any)?.toDate?.() || new Date(enroll.enrolledAt);
+        const month = date.getMonth();
+        monthlyCounts[month]++;
+      }
+    });
 
   //   this.Linecharts = {
-  //     chart: { type: 'line' },
-  //     title: { text: 'Enrollment Over Time' },
-  //     xAxis: {
-  //       categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  //                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  //     },
-  //     yAxis: {
-  //       title: { text: 'Enrollments Count' }
-  //     },
-  //     series: [{
-  //       name: 'Enrollments',
-  //       type: 'line',
-  //       data: monthlyCounts,
-  //       color: '#7B68EE'
-  //     }]
-  //   };
-  // });
+      chart: { type: 'line' },
+      title: { text: 'Enrollment Over Time' },
+      xAxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      },
+      yAxis: {
+        title: { text: 'Enrollments Count' }
+      },
+      series: [{
+        name: 'Enrollments',
+        type: 'line',
+        data: monthlyCounts,
+        color: '#7B68EE'
+      }]
+    };
+  });
 
   // Users Pie Chart
   this.usersService.getAll('Users').subscribe((users: Iuser[]) => {
