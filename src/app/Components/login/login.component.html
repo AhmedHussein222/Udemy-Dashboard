@@ -7,7 +7,6 @@
   </div>
 
   <span class="text-[#892de1] text-xl font-bold"> Administration </span>
-
   <!-- Right-side Buttons -->
   <div class="flex items-center space-x-4">
     <div class="relative flex items-center">
@@ -22,27 +21,28 @@
         aria-label="Search"
         (click)="toggleSearch()"
       >
-        <i class="fas fa-search text-[#892de1] text-xl"></i>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 text-[#892de1]"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
       </button>
     </div>
-
-    <button
-      class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3] text-sm"
-    >
-      Login
-    </button>
-    <button
-      class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 focus:outline-none"
-      aria-label="Change Language"
-    >
-      <i class="fas fa-globe text-[#892de1] text-xl"></i>
-    </button>
   </div>
 </div>
 
 <div class="flex flex-row w-full bg-white rounded h-[85vh]">
   <!-- Left side: Image -->
-  <div class="w-2/3 flex items-center justify-center ">
+  <div class="w-2/3 flex items-center justify-center">
     <img src="login.png" alt="Login" class="object-contain h-full" />
   </div>
 
@@ -98,38 +98,9 @@
         Login
       </button>
     </form>
-
-    <!-- Social Login Section -->
-    <div class="mt-8 text-center">
-      <p class="text-[#892de1] mb-6 text-lg">Other log in options:</p>
-      <div class="flex justify-center space-x-6">
-        <!-- Google Icon -->
-        <button
-          class="flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-100 focus:outline-none"
-          aria-label="Login with Google"
-          (click)="loginWithGoogle()"
-        >
-          <i class="fab fa-google text-4xl" style="color: #ea4335"></i>
-        </button>
-
-        <!-- Facebook Icon -->
-        <button
-          class="flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-100 focus:outline-none"
-          aria-label="Login with Facebook"
-          (click)="loginWithFacebook()"
-        >
-          <i class="fab fa-facebook-f text-4xl text-[#1877F2]"></i>
-        </button>
-
-        <!-- Apple Icon -->
-        <button
-          class="flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-100 focus:outline-none"
-          aria-label="Login with Apple"
-          (click)="loginWithApple()"
-        >
-          <i class="fab fa-apple text-4xl text-black"></i>
-        </button>
-      </div>
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mt-4 text-center text-red-500">
+      {{ errorMessage }}
     </div>
   </div>
 </div>

@@ -1,160 +1,215 @@
-      <h2 class="text-xl font-bold mb-4">Settings</h2>
-      <div class="bg-white p-4 shadow rounded">
-        <!-- Tab Navigation -->
-        <div class="flex border-b mb-4">
-          <button
-            *ngFor="let tab of settingsTabs; let i = index"
-            class="px-4 py-2 text-sm font-medium"
-            [class.border-b-2]="activeTab === i"
-            [class.border-[#892de1]]="activeTab === i"
-            [class.text-[#892de1]]="activeTab === i"
-            (click)="activeTab = i"
-          >
-            {{ tab }}
-          </button>
-        </div>
+<h2 class="text-xl font-bold mb-4">Settings</h2>
+<div class="bg-white p-4 shadow rounded">
+  <!-- Tab Navigation -->
+  <div class="flex border-b mb-4">
+    <button
+      *ngFor="let tab of settingsTabs; let i = index"
+      class="px-4 py-2 text-sm font-medium"
+      [class.border-b-2]="activeTab === i"
+      [class.border-[#892de1]]="activeTab === i"
+      [class.text-[#892de1]]="activeTab === i"
+      (click)="activeTab = i"
+    >
+      {{ tab }}
+    </button>
+  </div>
 
-        <!-- Tab Content -->
-        <div *ngIf="activeTab === 0">
-          <!-- General Tab -->
-          <form
-            [formGroup]="generalSettingsForm"
-            (ngSubmit)="saveGeneralSettings()"
-          >
-            <label class="block mb-2 font-bold">Site Title</label>
-            <input
-              type="text"
-              formControlName="siteTitle"
-              class="w-full border rounded p-2 mb-4"
-              placeholder="Enter site title"
-            />
-            <label class="block mb-2 font-bold">Logo Upload</label>
-            <input
-              type="file"
-              formControlName="logo"
-              class="w-full border rounded p-2 mb-4"
-            />
-            <label class="block mb-2 font-bold">Language</label>
-            <select
-              formControlName="language"
-              class="w-full border rounded p-2 mb-4"
-            >
-              <option *ngFor="let lang of languages" [value]="lang">
-                {{ lang }}
-              </option>
-            </select>
-            <label class="block mb-2 font-bold">Terms of Service</label>
-            <textarea
-              formControlName="tos"
-              class="w-full border rounded p-2 mb-4"
-              placeholder="Enter terms of service"
-            ></textarea>
-            <button
-              type="submit"
-              class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3]"
-            >
-              Save
-            </button>
-          </form>
-        </div>
+  <!-- Tab Content -->
+  <div *ngIf="activeTab === 0">
+    <!-- General Tab -->
+    <form [formGroup]="generalSettingsForm" (ngSubmit)="saveGeneralSettings()">
+      <label class="block mb-2 font-bold">Logo Upload</label>
+      <input
+        type="file"
+        formControlName="logo"
+        class="w-full border rounded p-2 mb-4"
+      />
+      <!-- i need her to show the below 
+               1-all data of the user which role admin 
+               2- edite the password in the data and can be update in firebase 
+               3- can change the photo 
+               and make same for any data can be change in the profile and make sure it will be updated in the firebase -->
 
-        <div *ngIf="activeTab === 1">
-          <!-- User Permissions Tab -->
-          <p class="font-bold mb-2">Role Matrix</p>
-          <table class="w-full border mb-4">
-            <thead>
-              <tr>
-                <th class="p-2 border">Role</th>
-                <th class="p-2 border">Permissions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let role of roles">
-                <td class="p-2 border">{{ role.name }}</td>
-                <td class="p-2 border">
-                  <div
-                    *ngFor="let perm of role.permissions"
-                    class="flex items-center gap-2"
-                  >
-                    <input
-                      type="checkbox"
-                      [checked]="perm.enabled"
-                      (change)="togglePermission(role.name, perm.name)"
-                    />
-                    <span>{{ perm.name }}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <!-- Add Admin by Email -->
-          <div class="mt-4">
-            <label class="block mb-2 font-bold">Add New Admin</label>
-            <div class="flex gap-2">
-              <input
-                type="email"
-                [(ngModel)]="newAdminEmail"
-                placeholder="Enter admin email"
-                class="w-full border rounded p-2"
-              />
-              <button
-                class="px-4 py-2 bg-[#892de1] text-white rounded hover:bg-[#6b1bb3]"
-                (click)="addAdmin(newAdminEmail)"
-              >
-                Add Admin
-              </button>
-            </div>
-          </div>
-        </div>
+      <button
+        type="submit"
+        class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3]"
+      >
+        Save
+      </button>
+    </form>
+  </div>
 
-        <div *ngIf="activeTab === 2">
-          <!-- Course Policies Tab -->
-          <p class="font-bold mb-2">Approval Workflow</p>
-          <textarea
-            formControlName="approvalWorkflow"
-            class="w-full border rounded p-2 mb-4"
-            placeholder="Enter approval workflow"
-          ></textarea>
-          <p class="font-bold mb-2">Rating Settings</p>
-          <input
-            type="number"
-            formControlName="ratingThreshold"
-            class="w-full border rounded p-2 mb-4"
-            placeholder="Enter rating threshold"
-          />
-        </div>
-
-        <div *ngIf="activeTab === 3">
-          <!-- Security Tab -->
-          <p class="font-bold mb-2">2FA Enforcement</p>
-          <input type="checkbox" formControlName="twoFactorAuth" class="mb-4" />
-          Enable 2FA
-          <p class="font-bold mb-2">Session Timeout</p>
-          <input
-            type="number"
-            formControlName="sessionTimeout"
-            class="w-full border rounded p-2 mb-4"
-            placeholder="Enter session timeout (minutes)"
-          />
-        </div>
-
-        <div *ngIf="activeTab === 4">
-          <!-- Customization Tab -->
-          <p class="font-bold mb-2">Theme</p>
-          <select
-            formControlName="theme"
-            class="w-full border rounded p-2 mb-4"
-          >
-            <option *ngFor="let theme of themes" [value]="theme">
-              {{ theme }}
-            </option>
-          </select>
-          <label class="block mb-2 font-bold">SEO Title</label>
-          <input
-            type="text"
-            formControlName="seoTitle"
-            class="w-full border rounded p-2 mb-4"
-            placeholder="Enter SEO title"
-          />
-        </div>
+  <div *ngIf="activeTab === 1">
+    <!-- User Permissions Tab -->
+    <div class="mt-4">
+      <label class="block mb-2 font-bold">Add New Admin</label>
+      <div class="flex gap-2">
+        <input
+          type="email"
+          [(ngModel)]="newAdminEmail"
+          placeholder="Enter admin email"
+          class="w-full border rounded p-2"
+        />
+        <button
+          class="px-4 py-2 bg-[#892de1] text-white rounded hover:bg-[#6b1bb3]"
+          (click)="addAdmin(newAdminEmail)"
+        >
+          Add Admin
+        </button>
+        <!-- i need hear to get all users which role admin and display them in a table like the tabe in users html  -->
       </div>
+    </div>
+
+    <!-- Display all admin users in a styled table -->
+    <div class="mt-4">
+      <table class="min-w-full bg-white font-bold">
+        <caption class="text-lg font-medium text-gray-900 mb-4">
+          Admin Users
+        </caption>
+        <thead>
+          <tr class="bg-gray-100">
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Name
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Email
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Role
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let admin of adminUsers">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm flex font-medium text-gray-900">
+                <img
+                  class="w-10 h-10 rounded-full"
+                  [src]="
+                    admin.profile_picture || 'assets/images/default_profile.png'
+                  "
+                  alt="Admin Profile Picture"
+                />
+                <p class="my-auto ml-1 text-sm font-medium text-gray-900">
+                  {{ admin.first_name }} {{ admin.last_name }}
+                </p>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500">{{ admin.email }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500">{{ admin.role }}</div>
+            </td>
+          </tr>
+          <tr *ngIf="adminUsers.length === 0">
+            <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">
+              No admin users found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 2">
+    <!-- Course Policies Tab -->
+    <p class="font-bold mb-2">Approval Workflow</p>
+    <textarea
+      formControlName="approvalWorkflow"
+      class="w-full border rounded p-2 mb-4"
+      placeholder="Enter approval workflow"
+    ></textarea>
+    <p class="font-bold mb-2">Rating Settings</p>
+    <input
+      type="number"
+      formControlName="ratingThreshold"
+      class="w-full border rounded p-2 mb-4"
+      placeholder="Enter rating threshold"
+    />
+  </div>
+
+  <div *ngIf="activeTab === 3">
+    <!-- Security Tab -->
+    <p class="font-bold mb-2">2FA Enforcement</p>
+    <input type="checkbox" formControlName="twoFactorAuth" class="mb-4" />
+    Enable 2FA
+    <p class="font-bold mb-2">Session Timeout</p>
+    <input
+      type="number"
+      formControlName="sessionTimeout"
+      class="w-full border rounded p-2 mb-4"
+      placeholder="Enter session timeout (minutes)"
+    />
+  </div>
+
+  <div *ngIf="activeTab === 4">
+    <!-- Customization Tab -->
+    <p class="font-bold mb-2">Theme</p>
+    <select formControlName="theme" class="w-full border rounded p-2 mb-4">
+      <option *ngFor="let theme of themes" [value]="theme">
+        {{ theme }}
+      </option>
+    </select>
+    <label class="block mb-2 font-bold">SEO Title</label>
+    <input
+      type="text"
+      formControlName="seoTitle"
+      class="w-full border rounded p-2 mb-4"
+      placeholder="Enter SEO title"
+    />
+  </div>
+
+  <!-- Display admin user data only in General Tab -->
+  <div *ngIf="activeTab === 0 && adminUser">
+    <label class="block mb-2 font-bold">Email</label>
+    <input
+      type="text"
+      [value]="adminUser.email"
+      class="w-full border rounded p-2 mb-4"
+      disabled
+    />
+
+    <label class="block mb-2 font-bold">Password</label>
+    <input
+      type="password"
+      [(ngModel)]="adminUser.password"
+      class="w-full border rounded p-2 mb-4"
+    />
+
+    <label class="block mb-2 font-bold">Profile Photo</label>
+    <input
+      type="file"
+      (change)="onPhotoChange($event)"
+      class="w-full border rounded p-2 mb-4"
+    />
+
+    <label class="block mb-2 font-bold">First Name</label>
+    <input
+      type="text"
+      [(ngModel)]="adminUser.firstName"
+      class="w-full border rounded p-2 mb-4"
+    />
+
+    <label class="block mb-2 font-bold">Last Name</label>
+    <input
+      type="text"
+      [(ngModel)]="adminUser.lastName"
+      class="w-full border rounded p-2 mb-4"
+    />
+
+    <button
+      type="button"
+      (click)="updateAdminUser()"
+      class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3]"
+    >
+      Update Profile
+    </button>
+  </div>
+</div>

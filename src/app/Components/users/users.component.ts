@@ -31,7 +31,6 @@ export class UsersComponent {
   
     
   constructor() {
-    // this.users = this.firestore.getAll('Users')
     this.firestore.getAll('Users').subscribe((data) => {
       this.users = data;
     });
@@ -53,7 +52,7 @@ export class UsersComponent {
       },
     ],
     accessibility: {
-      enabled: false, // Disable accessibility warnings
+      enabled: false, 
     },
   });
 
