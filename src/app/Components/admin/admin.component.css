@@ -1,0 +1,86 @@
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+}
+
+.tab.active {
+  font-weight: bold;
+  border-color: #007bff;
+  background-color: #f1f1f1;
+}
+
+.tab:hover {
+  background-color: #e9ecef;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.permission-list {
+  list-style: none;
+  padding: 0;
+}
+
+.permission-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.permission-list li label {
+  margin-left: 10px;
+}
+
+.theme-options {
+  display: flex;
+  gap: 10px;
+}
+
+.theme-option {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.theme-option.active {
+  border-color: #007bff;
+  background-color: #f1f1f1;
+}

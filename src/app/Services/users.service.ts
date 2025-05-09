@@ -11,12 +11,14 @@ import {
 } from 'firebase/firestore';
 import { Observable, from } from 'rxjs';
 import { db } from '../firebase.config';
+
 import { Iuser } from '../Models/iuser/iuser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
+
   constructor() {}
 
   getAll(): Observable<any[]> {
@@ -48,6 +50,7 @@ export class UsersService {
         }
       })()
     );
+
   }
 
   updateUser(user_id: string, data: Partial<Iuser>): Observable<boolean> {

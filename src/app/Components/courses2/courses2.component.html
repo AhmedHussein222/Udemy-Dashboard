@@ -1,0 +1,85 @@
+<h2 class="text-xl font-bold mb-4">Courses</h2>
+<div class="grid grid-cols-2 gap-4">
+  <!-- Chart Placeholder -->
+  <div class="bg-white p-4 shadow rounded">
+    <p class="font-bold mb-2">Courses Analytics</p>
+    <div class="h-48 bg-gray-200 rounded">Chart Placeholder</div>
+  </div>
+  <!-- Data Analysis -->
+  <div class="bg-white p-4 shadow rounded">
+    <p class="font-bold mb-2">Data Analysis</p>
+    <p>Total Reviews: 1200</p>
+    <p>Average Rating: 4.5</p>
+    <p>Pending Approvals: 15</p>
+  </div>
+</div>
+
+<!-- Pending Courses Table -->
+<div class="bg-white p-4 shadow rounded mt-6">
+  <h3 class="text-lg font-bold mb-4">Pending Courses</h3>
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th class="p-4 text-left">Course ID</th>
+        <th class="p-4 text-left">Title</th>
+        <th class="p-4 text-left">Instructor</th>
+        <th class="p-4 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="p-4">#201</td>
+        <td class="p-4">React Basics</td>
+        <td class="p-4">Jane Doe</td>
+        <td class="p-4 flex gap-2">
+          <button
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
+            [class.bg-green-700]="selectedAction === 'approve'"
+            (click)="approveCourse('#201'); selectedAction = 'approve'"
+          >
+            Approve
+          </button>
+          <button
+            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+            [class.bg-red-700]="selectedAction === 'reject'"
+            (click)="rejectCourse('#201'); selectedAction = 'reject'"
+          >
+            Reject
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- All Courses Table -->
+<div class="bg-white p-4 shadow rounded mt-6">
+  <h3 class="text-lg font-bold mb-4">All Courses</h3>
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th class="p-4 text-left">Course Name</th>
+        <th class="p-4 text-left">Instructor</th>
+        <th class="p-4 text-left">Duration</th>
+        <th class="p-4 text-left">Upload Date</th>
+        <th class="p-4 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="p-4">Angular Advanced</td>
+        <td class="p-4">John Smith</td>
+        <td class="p-4">10 hours</td>
+        <td class="p-4">2023-09-15</td>
+        <td class="p-4">
+          <button
+            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300"
+            (click)="removeCourse('Angular Advanced')"
+          >
+            Remove
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

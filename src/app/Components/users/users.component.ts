@@ -103,6 +103,7 @@ export class UsersComponent {
       // يمكنك إعادة حساب الإحصائيات هنا إذا لزم الأمر
     });
   }
+
   countEnrollmentsByUser(userId: string): number {
     return this.enrollments.filter(
       (enrollment) => enrollment.user_id === userId
@@ -167,6 +168,9 @@ export class UsersComponent {
         data: [],
       },
     ],
+    accessibility: {
+      enabled: false, 
+    },
   });
 
   trackByEmail(index: number, user: Iuser): string {
