@@ -1,20 +1,25 @@
+<!-- Sidebar for large screens -->
 <div
-  class="bg-gray-800 w-64 h-screen p-4 fixed top-0 left-0 hidden sm:block text-white z-40"
+  class="bg-black w-64 h-screen p-6 fixed top-0 left-0 hidden sm:block text-white z-40"
 >
-  <img src="logo-udemy.svg" alt="Logo" class="w-32 mb-6" />
+  <img
+    src="https://logos-world.net/wp-content/uploads/2021/11/Udemy-Symbol.png"
+    alt="Logo"
+    class="w-36 mb-8 mx-auto"
+  />
 
-  <ul class="space-y-4">
+  <ul class="space-y-6 text-lg font-semibold">
     <li>
       <a
         routerLink="/"
         routerLinkActive="text-white"
-        class="text-gray-300 hover:text-white"
+        class="text-gray-400 hover:text-white transition"
         >Dashboard</a
       >
     </li>
     <li>
       <a
-        routerLink="/main/Users"
+        routerLink="/main/users"
         routerLinkActive="text-white"
         class="text-gray-300 hover:text-white"
         >Users</a
@@ -24,7 +29,7 @@
       <a
         routerLink="/main/Courses"
         routerLinkActive="text-white"
-        class="text-gray-300 hover:text-white"
+        class="text-gray-400 hover:text-white transition"
         >Courses</a
       >
     </li>
@@ -32,7 +37,7 @@
       <a
         routerLink="/main/Admin"
         routerLinkActive="text-white"
-        class="text-gray-300 hover:text-white"
+        class="text-gray-400 hover:text-white transition"
         >Admin</a
       >
     </li>
@@ -40,8 +45,11 @@
 </div>
 
 <div class="sm:hidden fixed top-4 left-4 z-50">
-  <button (click)="toggleSidebar()" class="text-black">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <button
+    (click)="toggleSidebar()"
+    class="text-white bg-black p-2 rounded focus:outline-none focus:ring-2 focus:ring-white"
+  >
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -52,24 +60,38 @@
   </button>
 </div>
 
-<div
-  class="sm:hidden fixed inset-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300"
-  *ngIf="sidebarVisible"
->
-  <div class="bg-gray-800 w-64 h-full p-6 text-white">
-    <div class="flex justify-between items-center mb-6">
-      <img src="logo-udemy.svg" alt="Logo" class="w-24" />
-      <button (click)="toggleSidebar()"></button>
+<!-- Sidebar Overlay for small screens -->
+<div *ngIf="sidebarVisible" class="sm:hidden fixed inset-0 z-40">
+  <div class="bg-black w-64 h-full p-6 text-white shadow-lg relative z-50">
+    <div class="flex justify-between items-center mb-8">
+      <img
+        src="https://logos-world.net/wp-content/uploads/2021/11/Udemy-Symbol.png"
+        alt="Logo"
+        class="w-28"
+      />
+      <button (click)="toggleSidebar()" class="text-white text-3xl font-bold">
+        &times;
+      </button>
     </div>
-    <ul class="space-y-6 text-lg">
+    <ul class="space-y-6 text-lg font-semibold">
       <li>
-        <a routerLink="/Dashboard" routerLinkActive="text-blue-500"
+        <a
+          (click)="toggleSidebar()"
+          routerLink="/"
+          routerLinkActive="text-white"
           >Dashboard</a
         >
       </li>
-      <li><a (click)="toggleSidebar()" routerLink="/main/users">Users</a></li>
-      <li><a (click)="toggleSidebar()" routerLink="/courses">Courses</a></li>
-      <li><a (click)="toggleSidebar()" routerLink="/admin">Admin</a></li>
+      <li><a (click)="toggleSidebar()" routerLink="/main/Users">Users</a></li>
+      <li>
+        <a (click)="toggleSidebar()" routerLink="/main/Courses">Courses</a>
+      </li>
+      <li><a (click)="toggleSidebar()" routerLink="/main/Admin">Admin</a></li>
     </ul>
   </div>
+
+  <div
+    (click)="toggleSidebar()"
+    class="fixed inset-0 bg-black opacity-60"
+  ></div>
 </div>

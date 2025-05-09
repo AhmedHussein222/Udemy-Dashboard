@@ -2,32 +2,44 @@
 
   <div class="flex flex-wrap justify-around gap-4 mb-5  pt-5 ">
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
-      <h2 class="text-xl font-bold">Total Users</h2>
-      <h4 class="text-lg">1500</h4>
-      <h3 class="text-sm text-gray-600">15 instructors</h3>
-      <h3 class="text-sm text-gray-600">150 students</h3>
+      <h2 class="text-2xl font-bold">Total Users</h2>
+      <h4 class="text-xl">{{usersLength}}</h4>
+      <h3 class="text-lg text-gray-600">{{instructorsLength}} instructors</h3>
+      <h3 class="text-lg text-gray-600">{{studentsLength}} students</h3>
     </div>
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
-      <h2 class="text-xl font-bold">Total Courses</h2>
-      <h4 class="text-lg">256</h4>
+      <h2 class="text-2xl font-bold">Total Courses</h2>
+      <h4 class="text-xl">{{coursesLength}}</h4>
     </div>
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
-      <h2 class="text-xl font-bold">Revenue</h2>
-      <h4 class="text-lg">$12,866</h4>
+      <h2 class="text-2xl font-bold">Revenue</h2>
+      <h4 class="text-xl">{{revenue}}$</h4>
     </div>
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
-      <h2 class="text-xl font-bold">Average Rating</h2>
-      <h4 class="text-lg">4.6</h4>
+      <h2 class="text-2xl font-bold">Average Rating</h2>
+      <h4 class="text-xl">{{ averageRating | number:'1.1-2' }}</h4>
     </div>
   </div>
 
   <!-- Charts Row -->
   <div class="flex flex-wrap justify-around gap-4 mb-5">
-    <div class="bg-white shadow-md rounded-lg p-4 w-full sm:w-[48%] md:w-[49%] h-[300px]" [chart]="Linecharts">
-    </div>
-    <div class="bg-white shadow-md rounded-lg p-4 w-full sm:w-[48%] md:w-[49%] h-[300px]" [chart]="testchart">
-    </div>
+    <highcharts-chart
+    [Highcharts]="Highcharts"
+    [options]="Linecharts"
+    class="w-full md:w-[48%]"
+    style="height: 400px; display: block;">
+  </highcharts-chart>
+
+    <highcharts-chart
+      [Highcharts]="Highcharts"
+      [options]="chartOptions"
+      class="w-full md:w-[48%]"
+      style="height: 400px; display: block;">
+    </highcharts-chart>
+  
+
   </div>
+   
 
 
   <div class="flex flex-wrap justify-around gap-4 mb-10">
@@ -43,22 +55,13 @@
               <th class="px-4 py-3 border-b border-gray-200">Date</th>
             </tr>
           </thead>
+        
           <tbody class="text-gray-600">
-            <tr class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
-              <td class="px-4 py-3 border-b border-gray-200">Python for Beginners</td>
-              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
-              <td class="px-4 py-3 border-b border-gray-200">Python for Beginners</td>
-              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
-              <td class="px-4 py-3 border-b border-gray-200">Python for Beginners</td>
-              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
-            </tr>
+            <tr *ngFor="let item of enrollmentsWithNames"  class="hover:bg-gray-50 transition duration-200">
+              <td  class="px-4 py-3 border-b border-gray-200">{{ item.userName }}</td>
+              <td  class="px-4 py-3 border-b border-gray-200">{{ item.courseName }}</td>
+              <td  class="px-4 py-3 border-b border-gray-200">{{ item.enrolledAt | date: 'MM/dd/yyyy' }}</td>
+            
           </tbody>
         </table>
       </div>
@@ -76,22 +79,13 @@
               <th class="px-4 py-3 border-b border-gray-200">Date</th>
             </tr>
           </thead>
-          <tbody class="text-gray-600">
-            <tr class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
-              <td class="px-4 py-3 border-b border-gray-200">Mern for Beginners</td>
-              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
+          <tbody   class="text-gray-600">
+            <tr  *ngFor="let item of latestCoursesWithInstructors"  class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">{{item.instructorName}}</td>
+              <td class="px-4 py-3 border-b border-gray-200">{{item.courseName}}</td>
+              <td class="px-4 py-3 border-b border-gray-200">{{ item.createdAt | date: 'MM/dd/yyyy' }}</td>
             </tr>
-            <tr class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
-              <td class="px-4 py-3 border-b border-gray-200">.Net for Beginners</td>
-              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
-            </tr>
-            <tr class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">Malcolm Lockyer</td>
-              <td class="px-4 py-3 border-b border-gray-200">Front for Beginners</td>
-              <td class="px-4 py-3 border-b border-gray-200">07/20/2023</td>
-            </tr>
+    
           </tbody>
         </table>
       </div>

@@ -16,10 +16,9 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'Dashboard', pathMatch: 'full' },
       { path: 'Dashboard', component: DashboardComponent },
-      { path: 'Users', component: UsersComponent },
       { path: 'Admin', component: AdminComponent },
       { path: 'courses2', component: Courses2Component },
-      // { path: 'Courses', component: },
+      { path: 'users', component: UsersComponent },
     ],
   },
   { path: 'Admin', component: AdminDashboardComponent },

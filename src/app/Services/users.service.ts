@@ -7,35 +7,33 @@ import { Iuser } from '../Models/iuser/iuser';
   providedIn: 'root',
 })
 export class UsersService {
-  firestore: AngularFirestore;
 
-  constructor() {
-    this.firestore = inject(AngularFirestore);
-  }
-
-  getAll(collectionName: string): Observable<Iuser[]> {
-    return this.firestore.collection<Iuser>(collectionName).valueChanges();
-  }
-
-  getOne(collectionName: string, id: string): Observable<Iuser> {
+  private readonly collectionName = 'Users';
+  constructor(private firestore: AngularFirestore) {}
+  getAll(): Observable<Iuser[]> {
     return this.firestore
-      .collection<Iuser>(collectionName)
+      .collection<Iuser>(this.collectionName)
+      .valueChanges({ idField: 'user_id' }); // Add idField to include document ID
+  }
+
+  getOne(id: string): Observable<Iuser> {
+    return this.firestore
+      .collection<Iuser>(this.collectionName)
       .doc(id)
       .valueChanges() as Observable<Iuser>;
   }
-
-  getByEmail(collectionName: string, email: string): Observable<Iuser[]> {
-    console.log(
-      'Getting user by email:',
-      email,
-      'from collection:',
-      collectionName
-    );
-
+  updateUser(id: string, data: Partial<Iuser>): Promise<void> {
     return this.firestore
-      .collection<Iuser>(collectionName, (ref) =>
-        ref.where('email', '==', email).limit(1)
-      )
-      .valueChanges();
+      .collection<Iuser>(this.collectionName)
+      .doc(id)
+      .update(data);
   }
+  deleteUser(id: string): Promise<void> {
+    return this.firestore
+      .collection<Iuser>(this.collectionName)
+      .doc(id)
+      .delete();
+  }
+
+  // جلب بيانات مع استعلام
 }
