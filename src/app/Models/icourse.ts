@@ -4,6 +4,7 @@ export interface Icourse {
         course_id: string;
         description: string;
         discount: number;
+        thumbnail: string;
         duration: number;
         is_published: boolean;
         instructor_id: string;

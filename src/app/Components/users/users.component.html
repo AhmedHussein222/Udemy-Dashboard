@@ -1,6 +1,5 @@
 <div class="users-container p-1.5 box-border mt-15">
   <h1 class="text-3xl font-bold ps-2">Users</h1>
-<button (click)="true">getUsers</button>
   <div class="my-4 flex flex-col lg:flex-row gap-4">
     <div
       class="lg:w-1/2 h-fit bg-gray-100 rounded-xl shadow-md grid grid-cols-2 gap-5 p-2"
@@ -77,11 +76,6 @@
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
-            Enrollment
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
             Actions
           </th>
         </tr>
@@ -128,13 +122,6 @@
           <td class="px-6 py-4">
             <div class="text-sm text-gray-500 line-clamp-2">{{ user.bio }}</div>
           </td>
-          <td class="px-6 py-4">
-            <div class="flex items-center">
-              <span class="text-sm font-medium text-gray-900">{{
-                countEnrollmentsByUser(user.user_id)
-              }}</span>
-            </div>
-          </td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex space-x-2">
               <button
@@ -178,7 +165,7 @@
         </tr>
         } @if(users.length == 0) {
         <tr>
-          <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+          <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
             No users found.
           </td>
         </tr>

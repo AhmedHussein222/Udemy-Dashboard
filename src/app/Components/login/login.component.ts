@@ -34,7 +34,7 @@ export class LoginComponent {
 
     // Test Firebase connection and get all users immediately
     console.log('Attempting to fetch all users...');
-    this.userService.getAll('users').subscribe({
+    this.userService.getAll().subscribe({
       next: (users) => {
         console.log('All Users Data:', users);
         console.log('Total users found:', users.length);
@@ -90,7 +90,7 @@ export class LoginComponent {
     const email = this.loginForm.get('email')?.value;
     const password = this.loginForm.get('password')?.value;
 
-    this.userService.getAll('users').subscribe({
+    this.userService.getAll().subscribe({
       next: (allUsers) => {
         const matchingUser = allUsers.find(
           (user) => user.email === email && user.Password === password
