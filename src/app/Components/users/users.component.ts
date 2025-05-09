@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -21,9 +21,8 @@ import { UsersService } from '../../Services/users.service';
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent {
-  // private userService = inject(UsersService);
+  private userService = inject(UsersService);
   // private enrollService = inject(EnrollmentService);
-
   users!: Iuser[];
   enrollments!: Ienrollment[];
   editform: FormGroup;
@@ -35,10 +34,7 @@ export class UsersComponent {
   showEditModal = false;
   showDeleteModal = false;
   selectedUser!: Iuser;
-  constructor(
-    private userService: UsersService,
-    private enrollService: EnrollmentService
-  ) {
+  constructor(private enrollService: EnrollmentService) {
     this.userService.getAll().subscribe((data) => {
       this.users = data;
       data.forEach((user) => {
@@ -63,14 +59,7 @@ export class UsersComponent {
     this.enrollService.getAll('Enrollments').subscribe((data) => {
       this.enrollments = data;
     });
-    // this.userService
-    //   .updateUser('1', { email: '123' })
-    //   .then(() => {
-    //     alert('User updated successfully');
-    //   })
-    //   .catch((error) => {
-    //     alert('Error updating user:');
-    //   });
+
     this.editform = new FormGroup({
       user_id: new FormControl(''),
       first_name: new FormControl('', [Validators.required]),
@@ -86,24 +75,25 @@ export class UsersComponent {
       return;
     }
 
+    const userId = this.selectedUser.user_id;
+    if (!userId) {
+      console.error('No user ID found');
+      return;
+    }
+
     const userData = {
       ...this.editform.value,
-      // إزالة user_id إذا كنت لا تريد تحديثه
-      user_id: undefined,
     };
-
-    this.userService
-      .updateUser(this.editform.value.user_id, userData)
-      .then(() => {
+    this.userService.updateUser(userId, userData).subscribe({
+      next: () => {
         console.log('User updated successfully');
         this.closeEditModal();
-        // يمكنك إضافة تحديث للقائمة إذا لزم الأمر
         this.refreshUsers();
-      })
-      .catch((error) => {
+      },
+      error: (error) => {
         console.error('Error updating user:', error);
-        // يمكنك إضافة رسالة خطأ للمستخدم
-      });
+      },
+    });
   };
 
   // دالة مساعدة لتحديث قائمة المستخدمين
@@ -144,41 +134,21 @@ export class UsersComponent {
     this.selectedUser = {} as Iuser;
   }
 
-  // editUser() {
-  //   console.log('Editing user:', this.editform.value);
-
-  //   this.userService
-  //     .updateUser(this.editform.value.user_id, {
-  //       ...this.editform.value,
-  //     })
-  //     .subscribe({
-  //       next: (response) => {
-  //         console.log('User updated successfully');
-  //         console.log('Response:', response);
-
-  //         this.closeEditModal();
-  //       },
-  //       error: (error) => {
-  //         console.error('Error updating user:', error);
-  //       },
-  //     });
-  // }
-
   confirmDelete() {
     if (!this.selectedUser.user_id) {
       console.error('No user ID found');
       return;
     }
 
-    this.userService
-      .deleteUser(this.selectedUser.user_id)
-      .then(() => {
-        console.log('User deleted successfully');
+    this.userService.deleteUser(this.selectedUser.user_id).subscribe({
+      next: () => {
         this.closeDeleteModal();
-      })
-      .catch((error) => {
+        // تحديث قائمة المستخدمين بعد الحذف
+      },
+      error: (error) => {
         console.error('Error deleting user:', error);
-      });
+      },
+    });
   }
 
   filteredUsers() {
