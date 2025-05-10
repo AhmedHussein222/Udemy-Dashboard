@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Chart, ChartModule } from 'angular-highcharts';
+import Swal from 'sweetalert2';
 import { Ienrollment } from '../../Models/iuser/ienrollment';
 import { Iuser } from '../../Models/iuser/iuser';
 import { EnrollmentService } from '../../Services/enrollment.service';
@@ -89,6 +90,7 @@ export class UsersComponent {
         console.log('User updated successfully');
         this.closeEditModal();
         this.refreshUsers();
+        this.successModal('updated');
       },
       error: (error) => {
         console.error('Error updating user:', error);
@@ -122,32 +124,38 @@ export class UsersComponent {
 
   closeEditModal() {
     this.showEditModal = false;
-    this.selectedUser = {} as Iuser;
   }
 
   openDeleteModal(user: Iuser) {
-    this.selectedUser = user;
-    this.showDeleteModal = true;
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.confirmDelete(user);
+        this.successModal('deleted');
+        this.refreshUsers();
+      }
+    });
   }
 
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.selectedUser = {} as Iuser;
-  }
+  confirmDelete(user: Iuser) {
+    if (!user.user_id) {
+      this.errorModal('User ID is missing');
 
-  confirmDelete() {
-    if (!this.selectedUser.user_id) {
-      console.error('No user ID found');
       return;
     }
-
-    this.userService.deleteUser(this.selectedUser.user_id).subscribe({
+    this.userService.deleteUser(user.user_id).subscribe({
       next: () => {
-        this.closeDeleteModal();
-        // تحديث قائمة المستخدمين بعد الحذف
+        return true;
       },
       error: (error) => {
-        console.error('Error deleting user:', error);
+        this.errorModal(error.message);
       },
     });
   }
@@ -169,10 +177,24 @@ export class UsersComponent {
       },
     ],
     accessibility: {
-      enabled: false, 
+      enabled: false,
     },
   });
 
+  errorModal(msg: string) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: `Something went wrong! , ${msg}`,
+    });
+  }
+  successModal(action: string) {
+    Swal.fire({
+      title: `${action}`,
+      text: `User has been ${action}.`,
+      icon: 'success',
+    });
+  }
   trackByEmail(index: number, user: Iuser): string {
     return user.email;
   }
