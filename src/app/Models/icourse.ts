@@ -6,10 +6,11 @@ export interface Icourse {
         description: string;
         thumbnail: string;
         discount: number;
-        thumbnail: string;
         duration: number;
         is_published: boolean;
         instructor_id: string;
+        what_will_learn: string[];
+        requirements: string[];
         language: string;
         level:string;
         price:number;
