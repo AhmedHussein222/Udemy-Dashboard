@@ -1,0 +1,81 @@
+<div class="space-y-6">
+  <!-- Total Revenue Card -->
+  <div class="grid grid-cols-3 gap-4">
+    <div class="bg-white p-4 shadow rounded">
+      <h3 class="text-lg font-bold">Daily Revenue</h3>
+      <p class="text-2xl">${{ revenueTrends.daily }}</p>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <h3 class="text-lg font-bold">Monthly Revenue</h3>
+      <p class="text-2xl">${{ revenueTrends.monthly }}</p>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <h3 class="text-lg font-bold">Yearly Revenue</h3>
+      <p class="text-2xl">${{ revenueTrends.yearly }}</p>
+    </div>
+  </div>
+
+  <!-- Recent Transactions Table -->
+  <div class="bg-white p-4 shadow rounded">
+    <h2 class="text-xl font-bold mb-4">Recent Transactions</h2>
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th class="p-4 text-left">Student</th>
+          <th class="p-4 text-left">Course</th>
+          <th class="p-4 text-left">Amount</th>
+          <th class="p-4 text-left">Date</th>
+          <th class="p-4 text-left">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of recentTransactions">
+          <td class="p-4">{{ transaction.student }}</td>
+          <td class="p-4">{{ transaction.course }}</td>
+          <td class="p-4">${{ transaction.amount }}</td>
+          <td class="p-4">{{ transaction.date }}</td>
+          <td class="p-4">{{ transaction.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Payment Methods Chart -->
+  <div class="bg-white p-4 shadow rounded">
+    <h2 class="text-xl font-bold mb-4">Payment Methods</h2>
+    <div class="flex justify-center items-center h-48 bg-gray-100 rounded">
+      <p class="text-gray-500">Payment Methods Chart Placeholder</p>
+    </div>
+  </div>
+
+  <!-- Top Courses by Revenue -->
+  <div class="bg-white p-4 shadow rounded">
+    <h2 class="text-xl font-bold mb-4">Top Courses by Revenue</h2>
+    <ul class="space-y-2">
+      <li *ngFor="let course of topCourses" class="flex justify-between">
+        <span>{{ course.course }}</span>
+        <span>${{ course.revenue }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Refunds & Payouts Summary -->
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-white p-4 shadow rounded">
+      <h3 class="text-lg font-bold">Total Refunds</h3>
+      <p class="text-2xl">{{ refundsSummary.totalRefunds }}</p>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <h3 class="text-lg font-bold">Total Payouts</h3>
+      <p class="text-2xl">${{ refundsSummary.totalPayouts }}</p>
+    </div>
+  </div>
+
+  <!-- Revenue Trends Chart -->
+  <div class="bg-white p-4 shadow rounded">
+    <h2 class="text-xl font-bold mb-4">Revenue Trends</h2>
+    <div class="flex justify-center items-center h-48 bg-gray-100 rounded">
+      <p class="text-gray-500">Revenue Trends Chart Placeholder</p>
+    </div>
+  </div>
+</div>
