@@ -8,13 +8,13 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 })
 export class UnpublishedCoursesService {
   constructor(private firestore: AngularFirestore) {
-    console.log("✅ AngularFirestore injected:", firestore);
+    console.log("AngularFirestore injected:", firestore);
   }
 
   getUnpublishedCourses(): Observable<Icourse[]> {
-    console.log('🚀 Getting unpublished courses from Firestore...');
-    return this.firestore.collection<Icourse>('courses', ref =>
-      ref.where('is_published', '==', false)
+    console.log('Getting unpublished courses from Firestore...');
+    return this.firestore.collection<Icourse>('Courses', ref =>
+      ref.where('is_published', '==', true)
     ).valueChanges({ idField: 'course_id' });
   }
 }

@@ -2,81 +2,75 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UnpublishedCoursesService } from '../../Services/unpublished-courses.service';
 import { Icourse } from '../../Models/icourse';
-import { Observable } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-courses',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './courses.component.html'
+  templateUrl: './courses.component.html',
 })
-export class CoursesComponent implements OnInit {
-  courses$!: Observable<Icourse[]>;
-
+export class CoursesComponent  {
+  courses: Icourse[] = [];
 
   constructor(
-    private courseService: UnpublishedCoursesService, 
-    private firestore: AngularFirestore 
-  ) {}
+    private courseService: UnpublishedCoursesService,
+    private firestore: AngularFirestore
+  )
+   {
+     this.loadCourses();
+  }
 
   // ngOnInit(): void {
-  //   console.log('🚀 Getting unpublished courses from Firestore...');
-    
-  //   this.courseService.getUnpublishedCourses().subscribe({
-  //     next: (courses) => {
-  //       console.log("🔥 Fetched courses:", courses);
-  //       this.courses$ = this.courseService.getUnpublishedCourses(); 
-  //     },
-  //     error: (err) => {
-  //       console.error("❌ Error fetching courses:", err);
-  //     }
-  //   });
+  //   // تحميل البيانات في ngOnInit بدلاً من constructor
+  //   this.loadCourses();
   // }
-  ngOnInit(): void {
-    console.log('🚀 Getting unpublished courses from Firestore...');
-    
-    this.courseService.getUnpublishedCourses().subscribe({
-      next: (courses) => {
-        console.log("🔥 Fetched courses:", courses);
-        this.courses$ = this.courseService.getUnpublishedCourses(); 
-      },
-      error: (err) => {
-        console.error("❌ Error fetching courses:", err);  
-      },
-      complete: () => {
-        console.log("✅ Observable completed.");
-      }
+
+  // تحميل الكورسات من الخدمة
+  loadCourses(): void {
+    this.courseService.getUnpublishedCourses().subscribe(course => {
+      this.courses = course;
+      console.log('Unpublished courses:', this.courses);
     });
   }
-  
 
-  
-
- 
+  // تحديث الكورس إلى is_published = true
   accept(courseId: string) {
-    this.firestore.collection('courses').doc(courseId).update({ is_published: true })
+    this.firestore
+      .collection('Courses')
+      .doc(courseId)
+      .update({ is_published: true })
       .then(() => {
         console.log(`Course ${courseId} is now published`);
-       
-        this.courses$ = this.courseService.getUnpublishedCourses();
+        this.refreshCourses();  // إعادة تحميل الكورسات
       })
       .catch((error) => {
-        console.error('Error updating course: ', error);
+        console.error('Error updating document: ', error);
       });
   }
+
+  // حذف الكورس من Firestore
   delete(courseId: string) {
-    this.firestore.collection('courses').doc(courseId).delete()
+    this.firestore
+      .collection('Courses')
+      .doc(courseId)
+      .delete()
       .then(() => {
-        console.log(`Course ${courseId} deleted`);
-        this.courses$ = this.courseService.getUnpublishedCourses();
+        console.log(`Course ${courseId} deleted successfully`);
+        this.refreshCourses();  // إعادة تحميل الكورسات بعد الحذف
       })
       .catch((error) => {
         console.error('Error deleting course: ', error);
       });
   }
 
-  preview(course: any) {
+  // معاينة الكورس
+  preview(course: Icourse) {
     console.log('Preview course:', course);
+  }
+
+  // إعادة تحميل الكورسات بعد التحديث أو الحذف
+  private refreshCourses() {
+    this.loadCourses();  // يعيد تحميل الكورسات من الخدمة
   }
 }
