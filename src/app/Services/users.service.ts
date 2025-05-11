@@ -11,14 +11,12 @@ import {
 } from 'firebase/firestore';
 import { Observable, from } from 'rxjs';
 import { db } from '../firebase.config';
-
 import { Iuser } from '../Models/iuser/iuser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
-
   constructor() {}
 
   getAll(): Observable<any[]> {
@@ -50,16 +48,46 @@ export class UsersService {
         }
       })()
     );
-
   }
 
+  getUserByEmail(email: string): Observable<Iuser | null> {
+    return from(
+      (async () => {
+        try {
+          const q = query(collection(db, 'Users'), where('email', '==', email));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const data = doc.data();
+            return {
+              id: doc.id,
+              user_id: data['user_id'] || '',
+              first_name: data['first_name'] || '',
+              last_name: data['last_name'] || '',
+              email: data['email'] || email,
+              Password: data['Password'] || '',
+              role: data['role'] || '',
+              password: data['password'] || '', // Lowercase password for Iuser
+              gender: data['gender'] || '',
+              bio: data['bio'] || '',
+              created_at: data['created_at'] || '',
+              profile_picture: data['profile_picture'] || '',
+            } as Iuser;
+          }
+          return null;
+        } catch (error) {
+          console.error('Error getting user by email: ', error);
+          throw error;
+        }
+      })()
+    );
+  }
   updateUser(user_id: string, data: Partial<Iuser>): Observable<boolean> {
     return from(
       (async () => {
         const userRef = doc(db, 'Users', user_id);
         try {
           await updateDoc(userRef, data);
-          console.log('Document updated successfully');
           return true;
         } catch (error) {
           console.error('Error updating document: ', error);
@@ -74,7 +102,6 @@ export class UsersService {
       (async () => {
         const userRef = doc(db, 'Users', userId);
         await deleteDoc(userRef);
-        console.log('Document deleted');
       })()
     );
   }
@@ -93,6 +120,4 @@ export class UsersService {
       })()
     );
   }
-
-  // جلب بيانات مع استعلام
 }

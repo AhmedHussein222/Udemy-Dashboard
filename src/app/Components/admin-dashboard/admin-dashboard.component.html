@@ -56,35 +56,35 @@
       <ul>
         <li
           class="p-4 hover:bg-gray-700 cursor-pointer"
-          [class.bg-gray-900]="isActive('dashboard')"
+          [ngClass]="{ 'bg-[#8b31e2]': isActive('dashboard') }"
           (click)="switchSection('dashboard')"
         >
           Dashboard
         </li>
         <li
           class="p-4 hover:bg-gray-700 cursor-pointer"
-          [class.bg-gray-900]="isActive('users')"
+          [ngClass]="{ 'bg-[#8b31e2]': isActive('users') }"
           (click)="switchSection('users')"
         >
           Users
         </li>
         <li
           class="p-4 hover:bg-gray-700 cursor-pointer"
-          [class.bg-gray-900]="isActive('courses')"
+          [ngClass]="{ 'bg-[#8b31e2]': isActive('courses') }"
           (click)="switchSection('courses')"
         >
           Courses
         </li>
         <li
           class="p-4 hover:bg-gray-700 cursor-pointer"
-          [class.bg-gray-900]="isActive('payments')"
+          [ngClass]="{ 'bg-[#8b31e2]': isActive('payments') }"
           (click)="switchSection('payments')"
         >
           Payments
         </li>
         <li
           class="p-4 hover:bg-gray-700 cursor-pointer"
-          [class.bg-gray-900]="isActive('settings')"
+          [ngClass]="{ 'bg-[#8b31e2]': isActive('settings') }"
           (click)="switchSection('settings')"
         >
           Settings
