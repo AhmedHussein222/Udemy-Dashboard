@@ -1,27 +1,26 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { UsersService } from '../../Services/users.service'; // Adjust the path as necessary
+import { Subject, takeUntil } from 'rxjs';
+import { UsersService } from '../../Services/users.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-
-interface IUser {
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: string;
-  profile_picture?: string;
-  id?: string;
-}
+import { Iuser } from '../../Models/iuser/iuser';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule], // Add FormsModule
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   settingsTabs = [
     'General',
     'User Permissions',
@@ -31,103 +30,175 @@ export class AdminComponent implements OnInit {
   ];
   activeTab = 0;
   generalSettingsForm: FormGroup;
-  languages = ['English', 'Spanish', 'French', 'German'];
-  roles = [
-    {
-      name: 'Admin',
-      permissions: [
-        { name: 'Manage Users', enabled: true },
-        { name: 'Manage Courses', enabled: false },
-      ],
-    },
-    {
-      name: 'Instructor',
-      permissions: [
-        { name: 'Create Courses', enabled: true },
-        { name: 'View Analytics', enabled: false },
-      ],
-    },
-  ];
-  newAdminEmail = '';
+  profileForm: FormGroup;
+  profilePictureControl: FormControl = new FormControl('', [
+    Validators.required,
+    Validators.pattern('https?://.*'),
+  ]);
   themes = ['Light', 'Dark', 'Blue', 'Green'];
-
-  adminUser = {
-    email: 'admin@example.com',
-    password: 'admin123',
-    firstName: 'Admin',
-    lastName: 'User',
-    photo: null,
-  };
-
-  adminUsers: IUser[] = []; // Property to hold admin users
+  adminUsers: Iuser[] = [];
+  currentUser: Iuser | null = null;
+  editFields: { [key: string]: boolean } = {};
+  newAdminEmail = '';
+  formSubmitting = false;
+  private destroy$ = new Subject<void>();
 
   private userService = inject(UsersService);
-  private firestore: AngularFirestore = inject(AngularFirestore);
+  private firestore = inject(AngularFirestore);
 
   constructor(private fb: FormBuilder) {
     this.generalSettingsForm = this.fb.group({
-      siteTitle: [''],
-      logo: [null],
-      language: [''],
-      tos: [''],
+      siteTitle: ['', Validators.required],
+      language: ['', Validators.required],
+      theme: ['', Validators.required],
       approvalWorkflow: [''],
-      ratingThreshold: [0],
+      ratingThreshold: [0, [Validators.min(0), Validators.max(5)]],
       twoFactorAuth: [false],
-      sessionTimeout: [0],
-      theme: [''],
+      sessionTimeout: [0, Validators.min(0)],
       seoTitle: [''],
+    });
+
+    this.profileForm = this.fb.group({
+      first_name: [{ value: '', disabled: true }, Validators.required],
+      last_name: [{ value: '', disabled: true }, Validators.required],
+      bio: [{ value: '', disabled: true }],
+      password: [{ value: '', disabled: true }, Validators.minLength(8)],
     });
   }
 
   ngOnInit() {
     this.loadAdminUsers();
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.userService.getUserById(userId).subscribe({
+        next: (user) => {
+          this.currentUser = user;
+          this.profileForm.patchValue(user);
+        },
+        error: (error: Error) => console.error('Error fetching user:', error),
+      });
+    }
   }
 
-  // Fetch all admin users
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadAdminUsers() {
-    try {
-      this.firestore
-        .collection<IUser>('users', (ref) => ref.where('role', '==', 'admin'))
-        .snapshotChanges()
-        .subscribe({
-          next: (snapshot) => {
-            this.adminUsers = snapshot.map((snap) => {
-              const data = snap.payload.doc.data() as IUser;
-              const id = snap.payload.doc.id;
-              return { ...data, id };
-            });
-          },
-          error: (error) => {
-            console.error('Error loading admin users:', error);
-          },
-        });
-    } catch (error) {
-      console.error('Error in loadAdminUsers:', error);
-    }
+    this.userService
+      .getAdmins()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (users: Iuser[]) => {
+          this.adminUsers = users;
+        },
+        error: (error: Error) =>
+          console.error('Error loading admin users:', error),
+      });
   }
 
   saveGeneralSettings() {
-    console.log('General settings saved:', this.generalSettingsForm.value);
+    if (this.generalSettingsForm.invalid) {
+      this.generalSettingsForm.markAllAsTouched();
+      return;
+    }
+    console.log('Settings saved:', this.generalSettingsForm.value);
   }
 
-  togglePermission(roleName: string, permissionName: string) {
-    console.log(`Toggled permission: ${permissionName} for role: ${roleName}`);
-  }
-
-  addAdmin(email: string) {
-    console.log(`Added new admin: ${email}`);
-  }
-
-  onPhotoChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      console.log('Photo selected:', file.name);
-      this.adminUser.photo = file;
+  toggleEdit(field: string) {
+    if (field === 'profile_picture') {
+      this.editFields[field] = !this.editFields[field];
+      if (this.editFields[field]) {
+        this.profilePictureControl.setValue(
+          this.currentUser?.profile_picture || ''
+        );
+      }
+    } else {
+      const control = this.profileForm.get(field);
+      if (control) {
+        if (control.disabled) {
+          control.enable();
+          this.editFields[field] = true;
+        } else {
+          control.disable();
+          this.editFields[field] = false;
+        }
+      }
     }
   }
 
-  updateAdminUser() {
-    console.log('Updated admin user data:', this.adminUser);
-    // Add Firebase update logic here
+  updateField(field: string) {
+    if (!this.currentUser?.user_id || this.formSubmitting) return;
+
+    let value: any;
+    if (field === 'profile_picture') {
+      if (this.profilePictureControl.invalid) {
+        return;
+      }
+      value = this.profilePictureControl.value;
+    } else {
+      value = this.profileForm.get(field)?.value;
+    }
+
+    this.formSubmitting = true;
+    this.userService
+      .updateUser(this.currentUser.user_id, { [field]: value })
+      .subscribe({
+        next: () => {
+          if (this.currentUser) {
+            this.currentUser = { ...this.currentUser, [field]: value };
+          }
+          this.toggleEdit(field);
+          this.formSubmitting = false;
+        },
+        error: (error: Error) => {
+          console.error('Error updating user:', error);
+          this.formSubmitting = false;
+        },
+      });
+  }
+
+  onPhotoLoad(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/default_profile.png';
+  }
+
+  addAdmin(email: string) {
+    if (!email || !email.trim()) return;
+
+    const now = new Date();
+    const newAdmin: Partial<Iuser> = {
+      email: email.trim(),
+      role: 'admin',
+      first_name: '',
+      last_name: '',
+      user_id: email,
+      created_at: now,
+      password: '',
+      gender: '',
+      bio: '',
+      profile_picture: '',
+    };
+
+    this.firestore
+      .collection('users')
+      .doc(email)
+      .set(newAdmin)
+      .then(() => {
+        this.newAdminEmail = '';
+        this.loadAdminUsers();
+      })
+      .catch((error: Error) => console.error('Error adding admin:', error));
+  }
+
+  isFieldEditable(field: string): boolean {
+    return [
+      'first_name',
+      'last_name',
+      'password',
+      'bio',
+      'profile_picture',
+    ].includes(field);
   }
 }

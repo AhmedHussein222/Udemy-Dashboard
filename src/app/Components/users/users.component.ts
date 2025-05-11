@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Chart, ChartModule } from 'angular-highcharts';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import { Ienrollment } from '../../Models/iuser/ienrollment';
 import { Iuser } from '../../Models/iuser/iuser';
 import { EnrollmentService } from '../../Services/enrollment.service';
@@ -135,7 +135,7 @@ export class UsersComponent {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
+    }).then((result: SweetAlertResult) => {
       if (result.isConfirmed) {
         this.confirmDelete(user);
         this.successModal('deleted');
