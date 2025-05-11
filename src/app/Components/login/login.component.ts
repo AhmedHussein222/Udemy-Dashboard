@@ -72,7 +72,7 @@ export class LoginComponent {
         this.errorMessage = 'Email is required.';
         return;
       }
-      
+
       if (!passwordControl?.value) {
         this.errorMessage = 'Password is required.';
         return;
