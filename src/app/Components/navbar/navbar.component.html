@@ -1,22 +1,54 @@
 <nav class="bg-white p-4 fixed top-0 left-0 right-0 z-10 shadow-md">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="text-white text-xl font-bold">
-      </div>
-      <!-- Profile Dropdown (Optional) -->
-      <div class="relative">
-        <button (click)="toggleDropdown()" class="text-gray-300 hover:text-white focus:outline-none">
-          <img class="w-8 h-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User Profile">
-        </button>
-
-        <div *ngIf="dropdownVisible" class="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg">
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700">Your Profile</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700">Dark Mode</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700">Change password</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700">Sign out</a>
-        </div>
-      </div>
-     
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="text-white text-xl font-bold"></div>
+    <!-- Welcome Message -->
+    <div *ngIf="currentUser" class="flex items-center mr-4">
+      <span class="text-gray-700 font-medium"
+        >Welcome, {{ currentUser.first_name }}</span
+      >
     </div>
+    <!-- Profile Dropdown -->
+    <div class="relative">
+      <button
+        (click)="toggleDropdown()"
+        class="text-gray-300 hover:text-white focus:outline-none flex items-center"
+      >
+        <img
+          class="w-8 h-8 rounded-full mr-2"
+          [src]="
+            currentUser?.profile_picture || 'assets/images/default_profile.png'
+          "
+          alt="User Profile"
+        />
+        <span class="text-gray-700">{{ currentUser?.first_name }}</span>
+      </button>
 
-  </nav>
-  
+      <div
+        *ngIf="dropdownVisible"
+        class="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg z-50"
+      >
+        <a
+          href="#"
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >Your Profile</a
+        >
+        <a
+          href="#"
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >Dark Mode</a
+        >
+        <a
+          href="#"
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >Change password</a
+        >
+        <button
+          (click)="logout()"
+          class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+        >
+          Sign out
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

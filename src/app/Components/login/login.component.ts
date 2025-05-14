@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { UsersService } from '../../Services/users.service';
+import { AuthService } from '../../Services/auth.service';
 
 // Define interface for user data
 interface Iuser {
@@ -30,24 +31,22 @@ interface Iuser {
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   errorMessage: string = '';
-  loading: boolean = false; // Add loading state
+  loading: boolean = false;
   private loginSubscription?: Subscription;
-  private userService: UsersService;
+  private userService = inject(UsersService);
+  private authService = inject(AuthService);
   isSearchVisible: boolean = false;
 
   constructor(private router: Router, private fb: FormBuilder) {
-    this.userService = inject(UsersService);
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
-
   ngOnInit() {
     // Check if user is already logged in
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.router.navigate(['/main']);
+    if (this.authService.currentUserValue) {
+      this.router.navigate(['/main/Dashboard']);
     }
   }
 
@@ -57,40 +56,33 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loading = true; // Start loading
-    this.errorMessage = ''; // Clear previous errors
+    this.loading = true;
+    this.errorMessage = '';
     const { email, password } = this.loginForm.value;
 
     this.loginSubscription = this.userService.getUserByEmail(email).subscribe({
       next: (user: Iuser | null) => {
-        this.loading = false; // End loading
+        this.loading = false;
 
         if (!user) {
           this.errorMessage = 'Invalid email or password.';
           return;
         }
-
-        // Compare passwords - this is the fix for issue #1
-        // Make sure to compare the exact format of passwords
         if (user.password === password) {
           if (user.role === 'admin') {
-            localStorage.setItem('userId', user.user_id);
-            localStorage.setItem('currentUser', JSON.stringify(user)); // Store user data
-            this.router.navigate(['/main']);
+            // Store user data and update auth state
+            this.authService.login(user);
+            // Navigate to dashboard
+            this.router.navigate(['/main/Dashboard']);
           } else {
             this.errorMessage = "You don't have access to admin panel.";
           }
         } else {
           this.errorMessage = 'Invalid email or password.';
-          console.log('Password mismatch:', {
-            provided: password,
-            stored: user.password,
-            match: user.password === password,
-          });
         }
       },
       error: (error) => {
-        this.loading = false; // End loading
+        this.loading = false;
         this.errorMessage = 'Error accessing user data. Please try again.';
         console.error('Login error:', error);
       },
