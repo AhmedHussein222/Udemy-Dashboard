@@ -10,6 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { UsersService } from '../../Services/users.service';
+import { AuthService } from '../../Services/auth.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Iuser } from '../../Models/iuser/iuser';
 
@@ -31,7 +32,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   activeTab = 0;
   generalSettingsForm: FormGroup;
   profileForm: FormGroup;
-  profilePictureControl: FormControl = new FormControl('', [
+  profilePictureControl = new FormControl('', [
     Validators.required,
     Validators.pattern('https?://.*'),
   ]);
@@ -42,41 +43,58 @@ export class AdminComponent implements OnInit, OnDestroy {
   newAdminEmail = '';
   formSubmitting = false;
   private destroy$ = new Subject<void>();
-
   private userService = inject(UsersService);
+  private authService = inject(AuthService);
   private firestore = inject(AngularFirestore);
 
   constructor(private fb: FormBuilder) {
     this.generalSettingsForm = this.fb.group({
       siteTitle: ['', Validators.required],
-      language: ['', Validators.required],
-      theme: ['', Validators.required],
+      language: ['English', Validators.required],
+      theme: ['Light', Validators.required],
       approvalWorkflow: [''],
       ratingThreshold: [0, [Validators.min(0), Validators.max(5)]],
       twoFactorAuth: [false],
-      sessionTimeout: [0, Validators.min(0)],
+      sessionTimeout: [30, Validators.min(0)],
       seoTitle: [''],
     });
 
     this.profileForm = this.fb.group({
       first_name: [{ value: '', disabled: true }, Validators.required],
       last_name: [{ value: '', disabled: true }, Validators.required],
+      email: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.email],
+      ],
       bio: [{ value: '', disabled: true }],
+      profile_picture: [{ value: '', disabled: true }],
       password: [{ value: '', disabled: true }, Validators.minLength(8)],
     });
   }
 
   ngOnInit() {
     this.loadAdminUsers();
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      this.userService.getUserById(userId).subscribe({
-        next: (user) => {
-          this.currentUser = user;
-          this.profileForm.patchValue(user);
-        },
-        error: (error: Error) => console.error('Error fetching user:', error),
-      });
+
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+      try {
+        const user = JSON.parse(currentUserStr);
+        this.currentUser = user;
+
+        this.profileForm.patchValue({
+          first_name: user.first_name || '',
+          last_name: user.last_name || '',
+          email: user.email || '',
+          bio: user.bio || '',
+          profile_picture: user.profile_picture || '',
+        });
+
+        Object.keys(this.profileForm.controls).forEach((key) => {
+          this.profileForm.get(key)?.disable();
+        });
+      } catch (e) {
+        console.error('Error parsing current user:', e);
+      }
     }
   }
 
@@ -93,8 +111,9 @@ export class AdminComponent implements OnInit, OnDestroy {
         next: (users: Iuser[]) => {
           this.adminUsers = users;
         },
-        error: (error: Error) =>
-          console.error('Error loading admin users:', error),
+        error: (error: Error) => {
+          console.error('Error loading admin users:', error);
+        },
       });
   }
 
@@ -131,9 +150,12 @@ export class AdminComponent implements OnInit, OnDestroy {
   updateField(field: string) {
     if (!this.currentUser?.user_id || this.formSubmitting) return;
 
+    this.formSubmitting = true;
     let value: any;
+
     if (field === 'profile_picture') {
       if (this.profilePictureControl.invalid) {
+        this.formSubmitting = false;
         return;
       }
       value = this.profilePictureControl.value;
@@ -141,19 +163,24 @@ export class AdminComponent implements OnInit, OnDestroy {
       value = this.profileForm.get(field)?.value;
     }
 
-    this.formSubmitting = true;
     this.userService
       .updateUser(this.currentUser.user_id, { [field]: value })
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           if (this.currentUser) {
             this.currentUser = { ...this.currentUser, [field]: value };
+            localStorage.setItem(
+              'currentUser',
+              JSON.stringify(this.currentUser)
+            );
           }
           this.toggleEdit(field);
-          this.formSubmitting = false;
         },
-        error: (error: Error) => {
-          console.error('Error updating user:', error);
+        error: (error) => {
+          console.error(`Error updating ${field}:`, error);
+        },
+        complete: () => {
           this.formSubmitting = false;
         },
       });
@@ -161,23 +188,23 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   onPhotoLoad(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/images/default_profile.png';
+    if (img.naturalWidth === 0) {
+      this.profilePictureControl.setErrors({ invalidImage: true });
+    }
   }
 
   addAdmin(email: string) {
     if (!email || !email.trim()) return;
-
-    const now = new Date();
-    const newAdmin: Partial<Iuser> = {
+    const newAdmin: Iuser = {
       email: email.trim(),
+      user_id: email,
       role: 'admin',
       first_name: '',
       last_name: '',
-      user_id: email,
-      created_at: now,
       password: '',
       gender: '',
       bio: '',
+      created_at: new Date(),
       profile_picture: '',
     };
 
@@ -186,19 +213,15 @@ export class AdminComponent implements OnInit, OnDestroy {
       .doc(email)
       .set(newAdmin)
       .then(() => {
-        this.newAdminEmail = '';
         this.loadAdminUsers();
+        this.newAdminEmail = '';
       })
-      .catch((error: Error) => console.error('Error adding admin:', error));
+      .catch((error) => {
+        console.error('Error adding admin:', error);
+      });
   }
 
   isFieldEditable(field: string): boolean {
-    return [
-      'first_name',
-      'last_name',
-      'password',
-      'bio',
-      'profile_picture',
-    ].includes(field);
+    return this.editFields[field] || false;
   }
 }
