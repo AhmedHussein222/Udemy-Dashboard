@@ -59,18 +59,18 @@ export class UsersService {
           if (!querySnapshot.empty) {
             const doc = querySnapshot.docs[0];
             const data = doc.data();
+            console.log('Firebase user data:', data); // Debug log
             return {
               id: doc.id,
-              user_id: data['user_id'] || '',
+              user_id: data['user_id'] || doc.id,
               first_name: data['first_name'] || '',
               last_name: data['last_name'] || '',
               email: data['email'] || email,
-              Password: data['Password'] || '',
+              password: data['Password'] || data['password'] || '', // Try both cases
               role: data['role'] || '',
-              password: data['password'] || '', // Lowercase password for Iuser
               gender: data['gender'] || '',
               bio: data['bio'] || '',
-              created_at: data['created_at'] || '',
+              created_at: data['created_at'] || new Date(),
               profile_picture: data['profile_picture'] || '',
             } as Iuser;
           }
