@@ -120,4 +120,26 @@ export class UsersService {
       })()
     );
   }
+
+  // Method to update user by email
+  updateUserByEmail(email: string, data: Partial<Iuser>): Observable<boolean> {
+    return from(
+      (async () => {
+        try {
+          const q = query(collection(db, 'Users'), where('email', '==', email));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            await updateDoc(userDoc.ref, data);
+            return true;
+          }
+          throw new Error('User not found');
+        } catch (error) {
+          console.error('Error updating user: ', error);
+          throw error;
+        }
+      })()
+    );
+  }
 }
