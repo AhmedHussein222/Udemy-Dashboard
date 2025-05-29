@@ -7,8 +7,8 @@ import { Iuser } from '../../Models/iuser/iuser';
 import { CourseService } from '../../Services/course.service';
 import { EnrollmentService } from '../../Services/enrollment.service';
 import { RatingService } from '../../Services/rating.service';
-import { RevenueService } from '../../Services/revenue.service';
 import { UsersService } from '../../Services/users.service';
+import { PaymentService } from '../../Services/payment.service';
 import { Subject, catchError, combineLatest, map, of, takeUntil } from 'rxjs';
 import { IenrollmentWithNames } from '../../Models/ienrollmentnames';
 
@@ -21,253 +21,307 @@ import { IenrollmentWithNames } from '../../Models/ienrollmentnames';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  usersLength: number = 0;
-  coursesLength: number = 0;
-  revenue: number = 0;
+
+  // Loading states
+  isUsersLoading = true;
+  isCoursesLoading = true;
+  isRevenueLoading = true;
+  isRatingLoading = true;
+
+  // Error states
+  usersError: string | null = null;
+  coursesError: string | null = null;
+  revenueError: string | null = null;
+  ratingError: string | null = null;
+
+  // Data properties
+  usersLength = 0;
+  coursesLength = 0;
+  revenue = 0;
   enrollmentsWithNames: IenrollmentWithNames[] = [];
   courses: Icourse[] = [];
-  averageRating: number = 0;
-  instructorsLength: number = 0;
-  studentsLength: number = 0;
-  Highcharts: typeof Highcharts = Highcharts;
-  chartOptions: Highcharts.Options = {};
-  Linecharts: Highcharts.Options = {};
+  averageRating = 0;
+  instructorsLength = 0;
+  studentsLength = 0;
   latestCoursesWithInstructors: {
     courseName: string;
     createdAt: Date;
     instructorName: string;
   }[] = [];
 
-  isRevenueLoading = true;
-  isRatingLoading = true;
-  revenueError: string | null = null;
-  ratingError: string | null = null;
+  // Chart properties
+  Highcharts: typeof Highcharts = Highcharts;
+  chartOptions: Highcharts.Options = {};
+  Linecharts: Highcharts.Options = {};
 
+  // Additional loading states
+  isEnrollmentsLoading = true;
+  isLatestCoursesLoading = true;
+
+  // Additional error states
+  enrollmentsError: string | null = null;
+  latestCoursesError: string | null = null;
   constructor(
     private usersService: UsersService,
     private courseService: CourseService,
     private enrollmentService: EnrollmentService,
-    private revenueService: RevenueService,
+    private paymentService: PaymentService,
     private ratingService: RatingService
-  ) {
-    //Get all users number
-    this.usersService.getAll().subscribe((users: Iuser[]) => {
-      this.usersLength = users.length;
-    });
-    this.usersService.getAll().subscribe((users: Iuser[]) => {
-      this.instructorsLength = users.filter(
-        (user) => user.role === 'instructor'
-      ).length;
-      this.studentsLength = users.filter(
-        (user) => user.role === 'student'
-      ).length;
-    });
-
-    //Get all courses number
-    this.courseService.getAll('Courses').subscribe((courses: Icourse[]) => {
-      this.coursesLength = courses.length;
-    });
-
-    //Get all revenue
-    this.revenueService.getRevenue().subscribe((total) => {
-      this.revenue = total;
-    });
-
-    //Get all average rating
-    this.ratingService.getAverageRating().subscribe((avg) => {
-      this.averageRating = avg;
-    });
-
-    // Users Pie Chart
-    this.usersService.getAll().subscribe((users: Iuser[]) => {
-      const studentCount = users.filter((u) => u.role === 'student').length;
-      const instructorCount = users.filter(
-        (u) => u.role === 'instructor'
-      ).length;
-      const adminCount = users.filter((u) => u.role === 'admin').length;
-
-      this.chartOptions = {
-        chart: { type: 'pie' },
-        title: { text: 'Users by Role' },
-        series: [
-          {
-            name: 'Users',
-            type: 'pie',
-            data: [
-              { name: 'Students', y: studentCount, color: '#483D8B' },
-              { name: 'Instructors', y: instructorCount, color: '#7B68EE' },
-              { name: 'Admins', y: adminCount, color: '#6A5ACD' },
-            ],
-          },
-        ],
-      };
-      // console.log({ studentCount, instructorCount, adminCount });
-    });
-
-    // Enrollment Line Chart
-    this.enrollmentService.getAll('Enrollments').subscribe((enrollments) => {
-      const monthlyCounts = new Array(12).fill(0);
-      enrollments.forEach((enroll) => {
-        if (enroll.enrolledAt) {
-          const date =
-            (enroll.enrolledAt as any)?.toDate?.() ||
-            new Date(enroll.enrolledAt);
-          const month = date.getMonth();
-          monthlyCounts[month]++;
-        }
+  ) {}
+  ngOnInit(): void {
+    // Get Revenue from Payments
+    this.paymentService
+      .getAllOrders()
+      .pipe(
+        takeUntil(this.destroy$),
+        map((orders) => {
+          const completedPayments = orders.filter(
+            (order) => (order.status || '').toLowerCase() === 'completed'
+          );
+          return completedPayments.reduce(
+            (sum, order) => sum + (order.amount || 0),
+            0
+          );
+        }),
+        catchError((error) => {
+          console.error('Error fetching revenue:', error);
+          this.revenueError = 'Failed to load revenue data';
+          return of(0);
+        })
+      )
+      .subscribe({
+        next: (total) => {
+          this.revenue = total;
+          this.isRevenueLoading = false;
+          this.revenueError = null;
+          console.log('Total revenue calculated:', total);
+        },
       });
 
-      this.Linecharts = {
-        chart: { type: 'line' },
-        title: { text: 'Enrollment Over Time' },
-        xAxis: {
-          categories: [
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jul',
-            'Aug',
-            'Sep',
-            'Oct',
-            'Nov',
-            'Dec',
-          ],
+    // Get Average Rating
+    this.ratingService
+      .getAverageRating()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          console.error('Error fetching average rating:', error);
+          this.ratingError = 'Failed to load rating data';
+          return of(0);
+        })
+      )
+      .subscribe({
+        next: (rating) => {
+          this.averageRating = rating;
+          this.isRatingLoading = false;
+          this.ratingError = null;
         },
-        yAxis: {
-          title: { text: 'Enrollments Count' },
-        },
-        series: [
-          {
-            name: 'Enrollments',
-            type: 'line',
-            data: monthlyCounts,
-            color: '#7B68EE',
-          },
-        ],
-      };
-    });
+      });
 
-    //Get 5 latest enrollment
+    // Get users count and roles distribution
+    this.usersService
+      .getAll()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (users: Iuser[]) => {
+          this.usersLength = users.length;
+          this.instructorsLength = users.filter(
+            (user) => user.role === 'instructor'
+          ).length;
+          this.studentsLength = users.filter(
+            (user) => user.role === 'student'
+          ).length;
+          this.isUsersLoading = false;
+          this.usersError = null;
+
+          // Update users pie chart
+          const studentCount = users.filter((u) => u.role === 'student').length;
+          const instructorCount = users.filter(
+            (u) => u.role === 'instructor'
+          ).length;
+          const adminCount = users.filter((u) => u.role === 'admin').length;
+
+          this.chartOptions = {
+            chart: { type: 'pie' },
+            title: { text: 'Users by Role' },
+            series: [
+              {
+                name: 'Users',
+                type: 'pie',
+                data: [
+                  { name: 'Students', y: studentCount, color: '#483D8B' },
+                  { name: 'Instructors', y: instructorCount, color: '#7B68EE' },
+                  { name: 'Admins', y: adminCount, color: '#6A5ACD' },
+                ],
+              },
+            ],
+          };
+        },
+        error: (err) => {
+          console.error('Error fetching users:', err);
+          this.isUsersLoading = false;
+          this.usersError = 'Failed to load users data';
+        },
+      });
+
+    // Get courses count
+    this.courseService
+      .getAll('Courses')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (courses: Icourse[]) => {
+          this.coursesLength = courses.length;
+          this.isCoursesLoading = false;
+          this.coursesError = null;
+        },
+        error: (err) => {
+          console.error('Error fetching courses:', err);
+          this.isCoursesLoading = false;
+          this.coursesError = 'Failed to load courses data';
+        },
+      }); // Get average ratingwith loading and error states
+    this.ratingService
+      .getAverageRating()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (avg: number) => {
+          this.averageRating = avg;
+          this.isRatingLoading = false;
+          this.ratingError = null;
+          console.log('Average rating fetched:', avg); // Debug log
+        },
+        error: (err) => {
+          console.error('Error fetching average rating:', err);
+          this.isRatingLoading = false;
+          this.ratingError = 'Failed to load rating data';
+        },
+      });
+
+    // Initialize enrollment line chart
+    this.enrollmentService
+      .getAll('Enrollments')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (enrollments) => {
+          const monthlyCounts = new Array(12).fill(0);
+          enrollments.forEach((enroll) => {
+            if (enroll.enrolledAt) {
+              const date =
+                (enroll.enrolledAt as any)?.toDate?.() ||
+                new Date(enroll.enrolledAt);
+              const month = date.getMonth();
+              monthlyCounts[month]++;
+            }
+          });
+
+          this.Linecharts = {
+            chart: { type: 'line' },
+            title: { text: 'Enrollment Over Time' },
+            xAxis: {
+              categories: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec',
+              ],
+            },
+            yAxis: {
+              title: { text: 'Enrollments Count' },
+            },
+            series: [
+              {
+                name: 'Enrollments',
+                type: 'line',
+                data: monthlyCounts,
+                color: '#7B68EE',
+              },
+            ],
+          };
+          this.isEnrollmentsLoading = false;
+          this.enrollmentsError = null;
+        },
+        error: (err) => {
+          console.error('Error fetching enrollments:', err);
+          this.isEnrollmentsLoading = false;
+          this.enrollmentsError = 'Failed to load enrollment data';
+        },
+      });
+
+    // Get latest enrollments with names with loading/error states
     combineLatest([
       this.usersService.getAll(),
       this.courseService.getAll('Courses'),
       this.enrollmentService.getLatestEnrollments('Enrollments'),
     ])
       .pipe(
+        takeUntil(this.destroy$),
         map(([users, courses, enrollments]) => {
           return enrollments.map((enroll) => {
             const user = users.find((u) => u.user_id === enroll.user_id);
             const course = courses.find(
               (c) => c.course_id === enroll.course_id
             );
-
             return {
-              userName: user?.first_name || '',
-              courseName: course?.description || '',
+              userName: user?.first_name || 'Unknown',
+              courseName: course?.description || 'Unknown Course',
               enrolledAt: enroll.enrolledAt,
             };
           });
         })
       )
-      .subscribe((result) => {
-        this.enrollmentsWithNames = result;
+      .subscribe({
+        next: (result) => {
+          this.enrollmentsWithNames = result;
+          this.isEnrollmentsLoading = false;
+          this.enrollmentsError = null;
+        },
+        error: (err) => {
+          console.error('Error fetching latest enrollments:', err);
+          this.isEnrollmentsLoading = false;
+          this.enrollmentsError = 'Failed to load enrollment data';
+        },
       });
-    // console.log(this.enrollmentsWithNames);
 
-    //Get all 5 latest courses
+    // Get latest courses with loading/error states
     combineLatest([
       this.courseService.getLatestCourses('Courses'),
       this.courseService.getAllInstructors('Users'),
     ])
       .pipe(
-        catchError((error) => {
-          console.error('Error loading courses or instructors:', error);
-          return of([[], []]);
-        }),
+        takeUntil(this.destroy$),
         map(([courses, instructors]) => {
-          if (!courses.length) {
-            console.warn('No courses found.');
-          }
-          if (!instructors.length) {
-            console.warn('No instructors found.');
-          }
-
-          return courses.map((course) => {
-            const instructor = instructors.find(
-              (user) => user.user_id === course.instructor_id
-            );
-
-            return {
-              courseName: course.description || '(No description)',
-              createdAt: course.created_at || new Date(),
-              instructorName: instructor ? instructor.first_name : 'Unknown',
-            };
-          });
+          return courses.map((course) => ({
+            courseName: course.description || '(No description)',
+            createdAt: course.created_at || new Date(),
+            instructorName:
+              instructors.find((u) => u.user_id === course.instructor_id)
+                ?.first_name || 'Unknown',
+          }));
         })
       )
-      .subscribe((result) => {
-        // console.log('Final Combined Result:', result);
-        this.latestCoursesWithInstructors = result;
+      .subscribe({
+        next: (result) => {
+          this.latestCoursesWithInstructors = result;
+          this.isLatestCoursesLoading = false;
+          this.latestCoursesError = null;
+        },
+        error: (err) => {
+          console.error('Error fetching latest courses:', err);
+          this.isLatestCoursesLoading = false;
+          this.latestCoursesError = 'Failed to load course data';
+        },
       });
   }
 
-  ngOnInit(): void {
-    // // Enrollment Line Chart
-    // this.enrollmentService.getAll('Enrollments').subscribe(enrollments => {
-    //   const monthlyCounts = new Array(12).fill(0);
-    //   enrollments.forEach(enroll => {
-    //     if (enroll.enrolledAt) {
-    //       const date = (enroll.enrolledAt as any)?.toDate?.() || new Date(enroll.enrolledAt);
-    //       const month = date.getMonth();
-    //       monthlyCounts[month]++;
-    //     }
-    //   });
-
-    //   this.Linecharts = {
-    //     chart: { type: 'line' },
-    //     title: { text: 'Enrollment Over Time' },
-    //     xAxis: {
-    //       categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    //                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    //     },
-    //     yAxis: {
-    //       title: { text: 'Enrollments Count' }
-    //     },
-    //     series: [{
-    //       name: 'Enrollments',
-    //       type: 'line',
-    //       data: monthlyCounts,
-    //       color: '#7B68EE'
-    //     }]
-    //   };
-    // });
-
-    // Users Pie Chart
-    this.usersService.getAll().subscribe((users: Iuser[]) => {
-      const studentCount = users.filter((u) => u.role === 'student').length;
-      const instructorCount = users.filter(
-        (u) => u.role === 'instructor'
-      ).length;
-      const adminCount = users.filter((u) => u.role === 'admin').length;
-
-      this.chartOptions = {
-        chart: { type: 'pie' },
-        title: { text: 'Users by Role' },
-        series: [
-          {
-            name: 'Users',
-            type: 'pie',
-            data: [
-              { name: 'Students', y: studentCount, color: '#483D8B' },
-              { name: 'Instructors', y: instructorCount, color: '#7B68EE' },
-              { name: 'Admins', y: adminCount, color: '#6A5ACD' },
-            ],
-          },
-        ],
-      };
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
