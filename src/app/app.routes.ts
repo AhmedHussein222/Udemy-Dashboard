@@ -8,6 +8,7 @@ import { AdminDashboardComponent } from './Components/admin-dashboard/admin-dash
 import { AdminComponent } from './Components/admin/admin.component';
 import { Courses2Component } from './Components/courses2/courses2.component';
 import { CoursesComponent } from './Components/courses/courses.component';
+import { PaymentComponent } from './Components/payment/payment.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: 'courses2', component: Courses2Component },
       { path: 'courses', component: CoursesComponent },
       { path: 'users', component: UsersComponent },
+      { path: 'payment', component: PaymentComponent },
       { path: 'admin-dashboard', component: AdminDashboardComponent },
     ],
   },

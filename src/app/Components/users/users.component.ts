@@ -23,12 +23,11 @@ import { UsersService } from '../../Services/users.service';
 })
 export class UsersComponent {
   private userService = inject(UsersService);
-  // private enrollService = inject(EnrollmentService);
-  users!: Iuser[];
-  enrollments!: Ienrollment[];
-  editform: FormGroup;
-  roles = ['student', 'instructor', 'admin'];
-  selectedRole = '';
+  protected users: Iuser[] = [];
+  protected enrollments: Ienrollment[] = [];
+  protected editform!: FormGroup;
+  protected roles = ['student', 'instructor', 'admin'];
+  protected selectedRole = '';
   instructor_count!: number;
   admin_count!: number;
   student_count!: number;
