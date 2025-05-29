@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { Icourse } from '../../Models/icourse';
@@ -9,8 +9,7 @@ import { EnrollmentService } from '../../Services/enrollment.service';
 import { RatingService } from '../../Services/rating.service';
 import { RevenueService } from '../../Services/revenue.service';
 import { UsersService } from '../../Services/users.service';
-
-import { catchError, combineLatest, map, of } from 'rxjs';
+import { Subject, catchError, combineLatest, map, of, takeUntil } from 'rxjs';
 import { IenrollmentWithNames } from '../../Models/ienrollmentnames';
 
 @Component({
@@ -20,11 +19,11 @@ import { IenrollmentWithNames } from '../../Models/ienrollmentnames';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   usersLength: number = 0;
   coursesLength: number = 0;
   revenue: number = 0;
-  // latestEnrollments: Ienrollment[] = [];
   enrollmentsWithNames: IenrollmentWithNames[] = [];
   courses: Icourse[] = [];
   averageRating: number = 0;
@@ -38,6 +37,11 @@ export class DashboardComponent implements OnInit {
     createdAt: Date;
     instructorName: string;
   }[] = [];
+
+  isRevenueLoading = true;
+  isRatingLoading = true;
+  revenueError: string | null = null;
+  ratingError: string | null = null;
 
   constructor(
     private usersService: UsersService,
