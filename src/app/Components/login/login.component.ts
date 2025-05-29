@@ -1,4 +1,5 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+// login.component.ts
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -6,9 +7,19 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { UsersService } from '../../Services/users.service';
-import { Subscription } from 'rxjs';
+import { AuthService } from '../../Services/auth.service';
+
+// Define interface for user data
+interface Iuser {
+  user_id: string;
+  email: string;
+  password: string;
+  role: string;
+  // other user properties as needed
+}
 
 @Component({
   selector: 'app-login',
@@ -17,98 +28,88 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./login.component.css'],
   imports: [ReactiveFormsModule, CommonModule],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   errorMessage: string = '';
-  isSearchVisible: boolean = false;
+  loading: boolean = false;
   private loginSubscription?: Subscription;
-  private userService: UsersService;
+  private userService = inject(UsersService);
+  private authService = inject(AuthService);
+  isSearchVisible: boolean = false;
 
   constructor(private router: Router, private fb: FormBuilder) {
-    this.userService = inject(UsersService);
-    console.log('LoginComponent constructor initialized');
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+  }
+  ngOnInit() {
+    // Check if user is already logged in
+    if (this.authService.currentUserValue) {
+      this.router.navigate(['/main/Dashboard']);
+    }
+  }
 
-    // Test Firebase connection and get all users immediately
-    console.log('Attempting to fetch all users...');
-    this.userService.getAll('users').subscribe({
-      next: (users) => {
-        console.log('All Users Data:', users);
-        console.log('Total users found:', users.length);
-        users.forEach((user) => {
-          console.log('User Details:', {
-            email: user.email,
-            role: user.role,
-            firstName: user.first_name,
-            lastName: user.last_name,
-          });
-        });
+  onSubmit() {
+    if (this.loginForm.invalid) {
+      this.handleFormValidation();
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+    const { email, password } = this.loginForm.value;
+
+    this.loginSubscription = this.userService.getUserByEmail(email).subscribe({
+      next: (user: Iuser | null) => {
+        this.loading = false;
+
+        if (!user) {
+          this.errorMessage = 'Invalid email or password.';
+          return;
+        }
+        if (user.password === password) {
+          if (user.role === 'admin') {
+            // Store user data and update auth state
+            this.authService.login(user);
+            // Navigate to dashboard
+            this.router.navigate(['/main/Dashboard']);
+          } else {
+            this.errorMessage = "You don't have access to admin panel.";
+          }
+        } else {
+          this.errorMessage = 'Invalid email or password.';
+        }
       },
-      error: (err) => {
-        console.error('Error fetching users:', err);
-        console.error('Error details:', {
-          message: err.message,
-          code: err.code,
-          stack: err.stack,
-        });
+      error: (error) => {
+        this.loading = false;
+        this.errorMessage = 'Error accessing user data. Please try again.';
+        console.error('Login error:', error);
       },
     });
+  }
+
+  private handleFormValidation() {
+    const { email, password } = this.loginForm.controls;
+
+    if (!email.value) {
+      this.errorMessage = 'Email is required.';
+    } else if (email.errors?.['email']) {
+      this.errorMessage = 'Please enter a valid email address.';
+    } else if (!password.value) {
+      this.errorMessage = 'Password is required.';
+    } else {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+    }
   }
 
   toggleSearch() {
     this.isSearchVisible = !this.isSearchVisible;
   }
 
-  onSubmit() {
-    if (!this.loginForm.valid) {
-      const emailControl = this.loginForm.get('email');
-      const passwordControl = this.loginForm.get('password');
-
-      // Only show validation messages if the form was submitted
-      if (!emailControl?.value) {
-        this.errorMessage = 'Email is required.';
-        return;
-      }
-      
-      if (!passwordControl?.value) {
-        this.errorMessage = 'Password is required.';
-        return;
-      }
-
-      if (emailControl?.errors?.['email']) {
-        this.errorMessage = 'Please enter a valid email address.';
-        return;
-      }
-
-      this.errorMessage = 'Please fill in all required fields correctly.';
-      return;
+  ngOnDestroy() {
+    if (this.loginSubscription) {
+      this.loginSubscription.unsubscribe();
     }
-
-    const email = this.loginForm.get('email')?.value;
-    const password = this.loginForm.get('password')?.value;
-
-    this.userService.getAll('users').subscribe({
-      next: (allUsers) => {
-        const matchingUser = allUsers.find(
-          (user) => user.email === email && user.Password === password
-        );
-
-        if (matchingUser) {
-          if (matchingUser.role === 'admin') {
-            this.router.navigate(['/main']);
-          } else {
-            this.errorMessage = "You don't have access.";
-          }
-        } else {
-          this.errorMessage = 'Invalid email or password.';
-        }
-      },
-      error: () => {
-        this.errorMessage = 'Error accessing user data.';
-      },
-    });
   }
 }

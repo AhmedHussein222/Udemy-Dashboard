@@ -14,33 +14,517 @@
     </button>
   </div>
 
-  <!-- Tab Content -->
-  <div *ngIf="activeTab === 0">
-    <!-- General Tab -->
-    <form [formGroup]="generalSettingsForm" (ngSubmit)="saveGeneralSettings()">
-      <label class="block mb-2 font-bold">Logo Upload</label>
-      <input
-        type="file"
-        formControlName="logo"
-        class="w-full border rounded p-2 mb-4"
-      />
-      <!-- i need her to show the below 
-               1-all data of the user which role admin 
-               2- edite the password in the data and can be update in firebase 
-               3- can change the photo 
-               and make same for any data can be change in the profile and make sure it will be updated in the firebase -->
+  <!-- General Tab -->
+  <div *ngIf="activeTab === 0" class="space-y-6">
+    <div *ngIf="currentUser" class="bg-white rounded-lg p-6 shadow">
+      <!-- Profile Form -->
+      <form [formGroup]="profileForm" class="space-y-4">
+        <!-- Profile Picture -->
+        <div class="flex flex-col mb-6">
+          <label class="text-sm font-medium text-gray-700 mb-2"
+            >Profile Picture</label
+          >
+          <!-- Profile Section -->
+          <div class="flex items-start space-x-4">
+            <!-- Profile Picture -->
+            <div class="relative">
+              <div
+                class="w-32 h-32 relative rounded-full border-4 border-[#892de1] bg-gray-100"
+              >
+                <div
+                  class="w-full h-full rounded-full overflow-hidden flex items-center justify-center"
+                >
+                  <img
+                    [src]="
+                      currentUser.profile_picture ||
+                      'assets/images/default_profile.png'
+                    "
+                    class="w-full h-full object-contain"
+                    alt="Profile Picture"
+                    (error)="onPhotoError($event)"
+                  />
+                </div>
+                <button
+                  *ngIf="!isEditingPhoto"
+                  (click)="toggleEdit('profile_picture')"
+                  type="button"
+                  class="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-white text-[#892de1] flex flex-col items-center justify-center hover:bg-gray-50 transition-colors shadow-lg border-2 border-[#892de1]"
+                >
+                  <i class="fas fa-pencil-alt text-xs"></i>
+                  <span class="text-[10px] mt-0.5">Edit</span>
+                </button>
+              </div>
+            </div>
 
-      <button
-        type="submit"
-        class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3]"
-      >
-        Save
-      </button>
-    </form>
+            <!-- URL Edit Field -->
+            <div *ngIf="isEditingPhoto" class="flex-1 flex items-center">
+              <div class="relative w-full">
+                <input
+                  type="text"
+                  [formControl]="profilePictureControl"
+                  class="p-2 pr-24 border rounded-md w-full focus:border-[#892de1] focus:ring-1 focus:ring-[#892de1] transition-colors"
+                  placeholder="Enter profile picture URL"
+                />
+                <div
+                  class="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-2"
+                >
+                  <button
+                    type="button"
+                    (click)="cancelEdit('profile_picture')"
+                    class="px-2 py-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    (click)="saveEdit('profile_picture')"
+                    class="px-2 py-1 text-sm bg-[#892de1] text-white rounded hover:bg-[#7b26c2] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    [disabled]="profilePictureControl.invalid"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email (Read-only) -->
+        <div class="flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="text"
+            [value]="currentUser.email || ''"
+            class="mt-1 p-2 border rounded-md bg-gray-100 cursor-not-allowed"
+            disabled
+          />
+        </div>
+
+        <!-- Role (Read-only) -->
+        <div class="flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">Role</label>
+          <input
+            type="text"
+            [value]="currentUser.role || ''"
+            class="mt-1 p-2 border rounded-md bg-gray-100 cursor-not-allowed"
+            disabled
+          />
+        </div>
+
+        <!-- First Name -->
+        <div class="relative flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">First Name</label>
+          <div class="flex">
+            <input
+              type="text"
+              formControlName="first_name"
+              class="p-2 pr-20 border rounded-md w-full"
+              [ngClass]="{ 'bg-gray-100': !editFields['first_name'] }"
+            />
+            <button
+              *ngIf="!editFields['first_name']"
+              (click)="toggleEdit('first_name')"
+              class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3]"
+            >
+              Edite
+            </button>
+            <div
+              *ngIf="editFields['first_name']"
+              class="absolute right-2 top-8 flex space-x-2"
+            >
+              <button
+                (click)="toggleEdit('first_name')"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                (click)="updateField('first_name')"
+                class="text-sm text-green-600 hover:text-green-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="relative flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">Last Name</label>
+          <div class="flex">
+            <input
+              type="text"
+              formControlName="last_name"
+              class="p-2 pr-20 border rounded-md w-full"
+              [ngClass]="{ 'bg-gray-100': !editFields['last_name'] }"
+            />
+            <button
+              *ngIf="!editFields['last_name']"
+              (click)="toggleEdit('last_name')"
+              class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3]"
+            >
+              Edite
+            </button>
+            <div
+              *ngIf="editFields['last_name']"
+              class="absolute right-2 top-8 flex space-x-2"
+            >
+              <button
+                (click)="toggleEdit('last_name')"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                (click)="updateField('last_name')"
+                class="text-sm text-green-600 hover:text-green-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="relative flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">Bio</label>
+          <div class="flex">
+            <textarea
+              formControlName="bio"
+              rows="3"
+              class="p-2 pr-20 border rounded-md w-full resize-none"
+              [ngClass]="{ 'bg-gray-100': !editFields['bio'] }"
+            ></textarea>
+            <button
+              *ngIf="!editFields['bio']"
+              (click)="toggleEdit('bio')"
+              class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3]"
+            >
+              Edite
+            </button>
+            <div
+              *ngIf="editFields['bio']"
+              class="absolute right-2 top-8 flex space-x-2"
+            >
+              <button
+                (click)="toggleEdit('bio')"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                (click)="updateField('bio')"
+                class="text-sm text-green-600 hover:text-green-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gender -->
+        <div class="relative flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">Gender</label>
+          <div class="flex">
+            <select
+              formControlName="gender"
+              class="p-2 pr-20 border rounded-md w-full appearance-none"
+              [ngClass]="{ 'bg-gray-100': !editFields['gender'] }"
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <button
+              *ngIf="!editFields['gender']"
+              (click)="toggleEdit('gender')"
+              class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3]"
+            >
+              Edite
+            </button>
+            <div
+              *ngIf="editFields['gender']"
+              class="absolute right-2 top-8 flex space-x-2"
+            >
+              <button
+                (click)="toggleEdit('gender')"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                (click)="updateField('gender')"
+                class="text-sm text-green-600 hover:text-green-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="flex flex-col mb-4">
+          <div class="flex justify-between items-center">
+            <label class="text-sm font-medium text-gray-700">Password</label>
+            <button
+              *ngIf="!editFields['password']"
+              (click)="toggleEdit('password')"
+              class="text-sm text-[#892de1] hover:text-[#6b1bb3]"
+            >
+              Edite Password
+            </button>
+          </div>
+          <div class="relative mt-1">
+            <div class="flex items-center" *ngIf="!editFields['password']">
+              <input
+                type="password"
+                [value]="'********'"
+                class="p-2 pr-20 border rounded-md w-full bg-gray-100"
+                disabled
+              />
+            </div>
+            <div
+              class="flex items-center relative"
+              *ngIf="editFields['password']"
+            >
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                class="p-2 pr-20 border rounded-md w-full"
+                placeholder="Enter new password"
+              />
+              <button
+                (click)="showPassword = !showPassword"
+                class="absolute right-36 top-2 text-sm text-gray-500 hover:text-gray-700"
+              >
+                <i
+                  [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                ></i>
+              </button>
+              <div class="absolute right-2 top-2 flex space-x-2">
+                <button
+                  (click)="toggleEdit('password')"
+                  class="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  (click)="updateField('password')"
+                  class="text-sm text-green-600 hover:text-green-700"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+            <div
+              *ngIf="
+                profileForm.get('password')?.invalid &&
+                profileForm.get('password')?.touched &&
+                editFields['password']
+              "
+              class="text-red-500 text-xs mt-1"
+            >
+              Password must be at least 8 characters
+            </div>
+          </div>
+        </div>
+
+        <!-- Created At (Read-only) -->
+        <div class="flex flex-col mb-4">
+          <label class="text-sm font-medium text-gray-700">Created At</label>
+          <input
+            type="text"
+            [value]="currentUser.created_at | date : 'medium'"
+            class="mt-1 p-2 border rounded-md bg-gray-100 cursor-not-allowed"
+            disabled
+          />
+        </div>        <!-- Social Links -->
+        <div class="mb-4">
+          <h3 class="text-lg font-medium text-gray-700 mb-4">Social Links</h3>
+          <div class="space-y-4">
+            <!-- LinkedIn -->
+            <div class="relative flex flex-col">
+              <div class="flex items-center mb-1">
+                <i class="fab fa-linkedin text-[#0077b5] mr-2 text-lg"></i>
+                <label class="text-sm font-medium text-gray-700">LinkedIn</label>
+              </div>
+              <div class="flex">
+                <input
+                  type="text"
+                  formControlName="linkedin"
+                  class="p-2 pr-20 border rounded-md w-full transition-colors"
+                  [ngClass]="{ 'bg-gray-100': !editFields['links.linkedin'] }"
+                  placeholder="LinkedIn Profile URL"
+                />
+                <button
+                  *ngIf="!editFields['links.linkedin']"
+                  (click)="toggleEdit('links.linkedin')"
+                  type="button"
+                  class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                >
+                  Edit
+                </button>
+                <div
+                  *ngIf="editFields['links.linkedin']"
+                  class="absolute right-2 top-8 flex space-x-2"
+                >
+                  <button
+                    (click)="toggleEdit('links.linkedin')"
+                    type="button"
+                    class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>                  <button
+                    (click)="updateField('links.linkedin')"
+                    type="button"
+                    class="text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Facebook -->
+            <div class="relative flex flex-col">
+              <div class="flex items-center mb-1">
+                <i class="fab fa-facebook text-[#1877f2] mr-2 text-lg"></i>
+                <label class="text-sm font-medium text-gray-700">Facebook</label>
+              </div>
+              <div class="flex">
+                <input
+                  type="text"
+                  formControlName="facebook"
+                  class="p-2 pr-20 border rounded-md w-full transition-colors"
+                  [ngClass]="{ 'bg-gray-100': !editFields['links.facebook'] }"
+                  placeholder="Facebook Profile URL"
+                />
+                <button
+                  *ngIf="!editFields['links.facebook']"
+                  (click)="toggleEdit('links.facebook')"
+                  type="button"
+                  class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                >
+                  Edit
+                </button>
+                <div
+                  *ngIf="editFields['links.facebook']"
+                  class="absolute right-2 top-8 flex space-x-2"
+                >
+                  <button
+                    (click)="toggleEdit('links.facebook')"
+                    type="button"
+                    class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>                  <button
+                    (click)="updateField('links.facebook')"
+                    type="button"
+                    class="text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- YouTube -->
+            <div class="relative flex flex-col">
+              <div class="flex items-center mb-1">
+                <i class="fab fa-youtube text-[#ff0000] mr-2 text-lg"></i>
+                <label class="text-sm font-medium text-gray-700">YouTube</label>
+              </div>
+              <div class="flex">
+                <input
+                  type="text"
+                  formControlName="youtube"
+                  class="p-2 pr-20 border rounded-md w-full transition-colors"
+                  [ngClass]="{ 'bg-gray-100': !editFields['links.youtube'] }"
+                  placeholder="YouTube Channel URL"
+                />
+                <button
+                  *ngIf="!editFields['links.youtube']"
+                  (click)="toggleEdit('links.youtube')"
+                  type="button"
+                  class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                >
+                  Edit
+                </button>
+                <div
+                  *ngIf="editFields['links.youtube']"
+                  class="absolute right-2 top-8 flex space-x-2"
+                >
+                  <button
+                    (click)="toggleEdit('links.youtube')"
+                    type="button"
+                    class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>                  <button
+                    (click)="updateField('links.youtube')"
+                    type="button"
+                    class="text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instagram -->
+            <div class="relative flex flex-col">
+              <div class="flex items-center mb-1">
+                <i class="fab fa-instagram text-[#e4405f] mr-2 text-lg"></i>
+                <label class="text-sm font-medium text-gray-700">Instagram</label>
+              </div>
+              <div class="flex">
+                <input
+                  type="text"
+                  formControlName="instagram"
+                  class="p-2 pr-20 border rounded-md w-full transition-colors"
+                  [ngClass]="{ 'bg-gray-100': !editFields['links.instagram'] }"
+                  placeholder="Instagram Profile URL"
+                />
+                <button
+                  *ngIf="!editFields['links.instagram']"
+                  (click)="toggleEdit('links.instagram')"
+                  type="button"
+                  class="absolute right-2 top-8 text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                >
+                  Edit
+                </button>
+                <div
+                  *ngIf="editFields['links.instagram']"
+                  class="absolute right-2 top-8 flex space-x-2"
+                >
+                  <button
+                    (click)="toggleEdit('links.instagram')"
+                    type="button"
+                    class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>                  <button
+                    (click)="updateField('links.instagram')"
+                    type="button"
+                    class="text-sm text-[#892de1] hover:text-[#6b1bb3] transition-colors"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="!currentUser" class="text-center py-8 text-gray-600">
+      Please log in to view and edit your profile information.
+    </div>
   </div>
 
+  <!-- User Permissions Tab -->
   <div *ngIf="activeTab === 1">
-    <!-- User Permissions Tab -->
     <div class="mt-4">
       <label class="block mb-2 font-bold">Add New Admin</label>
       <div class="flex gap-2">
@@ -56,18 +540,14 @@
         >
           Add Admin
         </button>
-        <!-- i need hear to get all users which role admin and display them in a table like the tabe in users html  -->
       </div>
     </div>
 
-    <!-- Display all admin users in a styled table -->
-    <div class="mt-4">
-      <table class="min-w-full bg-white font-bold">
-        <caption class="text-lg font-medium text-gray-900 mb-4">
-          Admin Users
-        </caption>
+    <!-- Admin Users Table -->
+    <div class="mt-6 overflow-x-auto">
+      <table class="min-w-full bg-white">
         <thead>
-          <tr class="bg-gray-100">
+          <tr class="bg-gray-50 border-b">
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
@@ -88,29 +568,35 @@
         <tbody class="bg-white divide-y divide-gray-200">
           <tr *ngFor="let admin of adminUsers">
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm flex font-medium text-gray-900">
+              <div class="flex items-center">
                 <img
-                  class="w-10 h-10 rounded-full"
+                  class="h-10 w-10 rounded-full"
                   [src]="
                     admin.profile_picture || 'assets/images/default_profile.png'
                   "
-                  alt="Admin Profile Picture"
+                  [alt]="admin.first_name + ' ' + admin.last_name"
                 />
-                <p class="my-auto ml-1 text-sm font-medium text-gray-900">
-                  {{ admin.first_name }} {{ admin.last_name }}
-                </p>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ admin.first_name }} {{ admin.last_name }}
+                  </div>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500">{{ admin.email }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-500">{{ admin.role }}</div>
+              <span
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800"
+              >
+                {{ admin.role }}
+              </span>
             </td>
           </tr>
           <tr *ngIf="adminUsers.length === 0">
             <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">
-              No admin users found.
+              No admin users found
             </td>
           </tr>
         </tbody>
@@ -118,98 +604,183 @@
     </div>
   </div>
 
-  <div *ngIf="activeTab === 2">
-    <!-- Course Policies Tab -->
-    <p class="font-bold mb-2">Approval Workflow</p>
-    <textarea
-      formControlName="approvalWorkflow"
-      class="w-full border rounded p-2 mb-4"
-      placeholder="Enter approval workflow"
-    ></textarea>
-    <p class="font-bold mb-2">Rating Settings</p>
-    <input
-      type="number"
-      formControlName="ratingThreshold"
-      class="w-full border rounded p-2 mb-4"
-      placeholder="Enter rating threshold"
-    />
+  <!-- Course Policies Tab -->
+  <div *ngIf="activeTab === 2" class="space-y-6">
+    <div class="bg-white rounded-lg p-6 shadow">
+      <h3 class="text-lg font-semibold mb-4">Course Policies</h3>
+      <form [formGroup]="coursePolicyForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Review Process
+          </label>
+          <select
+            formControlName="reviewProcess"
+            class="w-full p-2 border rounded-md"
+          >
+            <option value="automatic">Automatic Approval</option>
+            <option value="manual">Manual Review</option>
+            <option value="hybrid">Hybrid (Auto + Manual)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Minimum Course Duration (Hours)
+          </label>
+          <input
+            type="number"
+            formControlName="minDuration"
+            class="w-full p-2 border rounded-md"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Maximum Course Price
+          </label>
+          <input
+            type="number"
+            formControlName="maxPrice"
+            class="w-full p-2 border rounded-md"
+          />
+        </div>
+
+        <div>
+          <label class="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              formControlName="requireCaption"
+              class="form-checkbox h-5 w-5 text-[#892de1]"
+            />
+            <span class="text-sm text-gray-700">Require Video Captions</span>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          (click)="saveCoursePolicies()"
+          class="w-full py-2 px-4 bg-[#892de1] text-white rounded-md hover:bg-[#6b1bb3] disabled:opacity-50"
+        >
+          Save Course Policies
+        </button>
+      </form>
+    </div>
   </div>
 
+  <!-- Customization Tab -->
+  <div *ngIf="activeTab === 4" class="space-y-6">
+    <div class="bg-white rounded-lg p-6 shadow">
+      <h3 class="text-lg font-semibold mb-4">Platform Customization</h3>
+      <form [formGroup]="customizationForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Platform Name
+          </label>
+          <input
+            type="text"
+            formControlName="platformName"
+            class="w-full p-2 border rounded-md"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Primary Color
+          </label>
+          <div class="flex items-center space-x-2">
+            <input
+              type="color"
+              formControlName="primaryColor"
+              class="w-12 h-8 rounded border p-1"
+            />
+            <input
+              type="text"
+              [formControl]="primaryColorText"
+              class="flex-1 p-2 border rounded-md"
+              placeholder="#892de1"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Footer Text
+          </label>
+          <textarea
+            formControlName="footerText"
+            rows="3"
+            class="w-full p-2 border rounded-md resize-none"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Custom CSS
+          </label>
+          <textarea
+            formControlName="customCSS"
+            rows="5"
+            class="w-full p-2 border rounded-md font-mono text-sm"
+            placeholder=".custom-class { color: #892de1; }"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          (click)="saveCustomization()"
+          class="w-full py-2 px-4 bg-[#892de1] text-white rounded-md hover:bg-[#6b1bb3] disabled:opacity-50"
+        >
+          Save Customization
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Security Tab -->
   <div *ngIf="activeTab === 3">
-    <!-- Security Tab -->
-    <p class="font-bold mb-2">2FA Enforcement</p>
-    <input type="checkbox" formControlName="twoFactorAuth" class="mb-4" />
-    Enable 2FA
-    <p class="font-bold mb-2">Session Timeout</p>
-    <input
-      type="number"
-      formControlName="sessionTimeout"
-      class="w-full border rounded p-2 mb-4"
-      placeholder="Enter session timeout (minutes)"
-    />
-  </div>
+    <form [formGroup]="generalSettingsForm" class="space-y-6">
+      <div>
+        <label class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            formControlName="twoFactorAuth"
+            class="form-checkbox h-5 w-5 text-[#892de1]"
+          />
+          <span class="text-sm font-medium text-gray-700"
+            >Enable Two-Factor Authentication</span
+          >
+        </label>
+      </div>
 
-  <div *ngIf="activeTab === 4">
-    <!-- Customization Tab -->
-    <p class="font-bold mb-2">Theme</p>
-    <select formControlName="theme" class="w-full border rounded p-2 mb-4">
-      <option *ngFor="let theme of themes" [value]="theme">
-        {{ theme }}
-      </option>
-    </select>
-    <label class="block mb-2 font-bold">SEO Title</label>
-    <input
-      type="text"
-      formControlName="seoTitle"
-      class="w-full border rounded p-2 mb-4"
-      placeholder="Enter SEO title"
-    />
-  </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Session Timeout (minutes)
+        </label>
+        <input
+          type="number"
+          formControlName="sessionTimeout"
+          class="w-full p-2 border rounded-md"
+          placeholder="Enter timeout in minutes"
+        />
+        <div
+          *ngIf="
+            generalSettingsForm.get('sessionTimeout')?.invalid &&
+            generalSettingsForm.get('sessionTimeout')?.touched
+          "
+          class="text-red-500 text-xs mt-1"
+        >
+          Session timeout must be a positive number
+        </div>
+      </div>
 
-  <!-- Display admin user data only in General Tab -->
-  <div *ngIf="activeTab === 0 && adminUser">
-    <label class="block mb-2 font-bold">Email</label>
-    <input
-      type="text"
-      [value]="adminUser.email"
-      class="w-full border rounded p-2 mb-4"
-      disabled
-    />
-
-    <label class="block mb-2 font-bold">Password</label>
-    <input
-      type="password"
-      [(ngModel)]="adminUser.password"
-      class="w-full border rounded p-2 mb-4"
-    />
-
-    <label class="block mb-2 font-bold">Profile Photo</label>
-    <input
-      type="file"
-      (change)="onPhotoChange($event)"
-      class="w-full border rounded p-2 mb-4"
-    />
-
-    <label class="block mb-2 font-bold">First Name</label>
-    <input
-      type="text"
-      [(ngModel)]="adminUser.firstName"
-      class="w-full border rounded p-2 mb-4"
-    />
-
-    <label class="block mb-2 font-bold">Last Name</label>
-    <input
-      type="text"
-      [(ngModel)]="adminUser.lastName"
-      class="w-full border rounded p-2 mb-4"
-    />
-
-    <button
-      type="button"
-      (click)="updateAdminUser()"
-      class="bg-[#892de1] text-white py-2 px-4 rounded hover:bg-[#6b1bb3]"
-    >
-      Update Profile
-    </button>
+      <button
+        type="submit"
+        class="w-full py-2 px-4 bg-[#892de1] text-white rounded-md hover:bg-[#6b1bb3] disabled:opacity-50"
+        [disabled]="generalSettingsForm.invalid"
+        (click)="saveGeneralSettings()"
+      >
+        Save Security Settings
+      </button>
+    </form>
   </div>
 </div>

@@ -1,1 +1,81 @@
-@import 'tailwindcss'
+/* Material Design Theme */
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
+/* Tailwind */
+@import 'tailwindcss';
+
+/* Base Styles */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f7f7fa;
+}
+
+/* Custom Utility Classes */
+.bg-gradient-primary {
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+}
+
+/* Material Overrides */
+.mat-mdc-card {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-form-field-wrapper {
+  margin-bottom: 0;
+}
+
+/* Fix Material form field layout */
+.mat-mdc-text-field-wrapper {
+  background-color: white !important;
+}
+
+.mat-mdc-form-field {
+  display: block !important;
+}
+
+/* Table cell padding */
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  padding: 16px !important;
+}
+
+/* Center text within cells */
+.mat-mdc-cell {
+  vertical-align: middle !important;
+}
+
+/* Icon alignment */
+.mat-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+/* Status colors */
+.status-completed {
+  color: #2e7d32;
+}
+
+.status-pending {
+  color: #ed6c02;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

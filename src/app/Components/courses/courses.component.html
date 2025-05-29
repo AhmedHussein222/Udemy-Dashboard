@@ -1,24 +1,70 @@
+<div class="container mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-6 text-center">Unpublished Courses</h2>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-7 mt-10">
-  <div *ngFor="let course of courses$ | async" class="bg-white shadow-lg rounded-2xl p-5 border border-gray-200 hover:shadow-xl transition">
-    
-   
-    <img [src]="course.thumbnail || 'https://via.placeholder.com/400x200?text=Course+Image'"
-         class="w-full h-40 object-cover rounded-xl mb-4" />
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let course of courses" class="bg-white rounded-2xl shadow-lg p-4 flex flex-col">
+      <img [src]="course.thumbnail" alt="course image" class="w-full h-40 object-cover rounded-xl mb-4" />
 
-    <h2 class="text-xl font-semibold text-gray-800 mb-1">{{ course.course_id }}</h2> 
-    <p class="text-gray-500 text-sm mb-1">By Instructor: <span class="font-medium text-gray-700">{{ course.instructor_id }}</span></p>
-    <p class="text-gray-600 mb-4 text-sm">{{ course.description }}</p>
-    <p class="text-gray-500 text-sm mb-1">Level: <span class="font-medium text-gray-700">{{ course.level }}</span></p>
-    <p class="text-gray-500 text-sm mb-1">Duration: <span class="font-medium text-gray-700">{{ course.duration }} hrs</span></p>
-    <p class="text-gray-500 text-sm mb-1">Price: <span class="font-medium text-gray-700">${{ course.price }}</span></p>
+      <div class="flex-1 mb-4">
+        <h3 class="text-xl font-semibold mb-1">{{ course.title }}</h3>
+        <p class="text-sm text-gray-500">{{ course.description }}</p>
+      </div>
 
-    
-
-    <div class="flex gap-3">
-      <button (click)="accept(course.course_id)" class="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1 rounded-xl">Accept</button>
-      <button (click)="delete(course.course_id)" class="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded-xl">Delete</button>
-      <button (click)="preview(course)" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded-xl">Preview</button>
+      <div class="flex flex-wrap gap-2 mt-auto">
+        <button class="flex-1 min-w-[100px] bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600" (click)=" accept(course.course_id)">
+          Accept
+        </button>
+        <button class="flex-1 min-w-[100px] bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" (click)=" delete(course.course_id)">
+          Delete
+        </button>
+        <button class="flex-1 min-w-[100px] bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600" (click)="preview(course)">
+          Preview
+        </button>
+      </div>
     </div>
   </div>
+
+
+  <!-- Modal -->
+  <div *ngIf="showModal && selectedCourse"
+       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
+      <!-- Close button -->
+      <button (click)="closePreview()"
+              class="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl">&times;</button>
+
+      <h3 class="text-2xl font-bold mb-4">{{ selectedCourse.title }}</h3>
+
+      <img [src]="selectedCourse.thumbnail" class="w-full h-64 object-cover rounded mb-4" alt="course image" />
+
+      <div class="space-y-2 text-sm text-gray-700">
+        <p><strong>Description:</strong> {{ selectedCourse.description }}</p>
+        <p><strong>Duration:</strong> {{ selectedCourse.duration }} hours</p>
+        <p><strong>Price:</strong> ${{ selectedCourse.price }}</p>
+        <p><strong>Discount:</strong> {{ selectedCourse.discount}}%</p>
+        <p><strong>Language:</strong> {{ selectedCourse.language }}</p>
+        <p><strong>Level:</strong> {{ selectedCourse.level }}</p>
+        <p><strong>Created At:</strong> {{ selectedCourse.created_at}}</p>
+      </div>
+       <div class="mt-4">
+        <h4 class="text-lg font-semibold mb-2">Requirements:</h4>
+        <ul class="list-disc list-inside text-sm text-gray-700">
+          <li *ngFor="let requirement of selectedCourse.requirements">{{ requirement }}</li>
+        </ul>
+        </div>
+      <div class="mt-4">
+        <h4 class="text-lg font-semibold mb-2">Course Content:</h4>
+        <ul class="list-disc list-inside text-sm text-gray-700">
+          <li *ngFor="let content of selectedCourse.what_will_learn">{{ content }}</li>
+        </ul>
+   </div>
+     <div class="mt-6 flex justify-between gap-4">
+        <button (click)="accept(selectedCourse.course_id)"
+                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Accept</button>
+        <button (click)="delete(selectedCourse.course_id)"
+                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</button>
+        <button (click)="closePreview()"
+                class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">Close</button>
+      </div>
+</div>
 </div>
