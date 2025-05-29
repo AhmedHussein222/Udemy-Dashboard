@@ -1,53 +1,204 @@
-<div class="  mx-auto px-4 mt-10">
-
-  <div class="flex flex-wrap justify-around gap-4 mb-5  pt-5 ">
+<div class="mx-auto px-4 mt-10">
+  <div class="flex flex-wrap justify-around gap-4 mb-5 pt-5">
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
       <h2 class="text-2xl font-bold">Total Users</h2>
-      <h4 class="text-xl">{{usersLength}}</h4>
-      <h3 class="text-lg text-gray-600">{{instructorsLength}} instructors</h3>
-      <h3 class="text-lg text-gray-600">{{studentsLength}} students</h3>
+      <div *ngIf="isUsersLoading" class="flex justify-center items-center py-4">
+        <svg
+          class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+      <div *ngIf="usersError" class="text-red-500">{{ usersError }}</div>
+      <ng-container *ngIf="!isUsersLoading && !usersError">
+        <h4 class="text-xl">{{ usersLength }}</h4>
+        <h3 class="text-lg text-gray-600">{{ instructorsLength }} instructors</h3>
+        <h3 class="text-lg text-gray-600">{{ studentsLength }} students</h3>
+      </ng-container>
     </div>
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
       <h2 class="text-2xl font-bold">Total Courses</h2>
-      <h4 class="text-xl">{{coursesLength}}</h4>
+      <div *ngIf="isCoursesLoading" class="flex justify-center items-center py-4">
+        <svg
+          class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+      <div *ngIf="coursesError" class="text-red-500">{{ coursesError }}</div>
+      <h4 *ngIf="!isCoursesLoading && !coursesError" class="text-xl">{{ coursesLength }}</h4>
     </div>
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
       <h2 class="text-2xl font-bold">Revenue</h2>
-      <h4 class="text-xl">{{revenue}}$</h4>
+      <div *ngIf="isRevenueLoading" class="flex justify-center items-center py-4">
+        <svg
+          class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+      <div *ngIf="revenueError" class="text-red-500">{{ revenueError }}</div>
+      <h4 *ngIf="!isRevenueLoading && !revenueError" class="text-xl">{{ revenue | currency }}</h4>
     </div>
     <div class="bg-white shadow-md rounded-lg p-5 flex flex-col w-full sm:w-[48%] md:w-[22%] mt-10">
       <h2 class="text-2xl font-bold">Average Rating</h2>
-      <h4 class="text-xl">{{ averageRating | number:'1.1-2' }}</h4>
+      <div *ngIf="isRatingLoading" class="flex justify-center items-center py-4">
+        <svg
+          class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+      <div *ngIf="ratingError" class="text-red-500">{{ ratingError }}</div>
+      <h4 *ngIf="!isRatingLoading && !ratingError" class="text-xl">{{ averageRating | number: '1.1-2' }}</h4>
     </div>
   </div>
 
   <!-- Charts Row -->
   <div class="flex flex-wrap justify-around gap-4 mb-5">
-    <highcharts-chart
-    [Highcharts]="Highcharts"
-    [options]="Linecharts"
-    class="w-full md:w-[48%]"
-    style="height: 400px; display: block;">
-  </highcharts-chart>
+    <!-- Enrollment Chart -->
+    <div class="w-full md:w-[48%]">
+      <div *ngIf="isEnrollmentsLoading" class="h-[400px] flex items-center justify-center bg-white shadow-md rounded-lg">
+        <svg
+          class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+      <div *ngIf="enrollmentsError" class="h-[400px] flex items-center justify-center bg-white shadow-md rounded-lg">
+        <span class="text-red-500">{{ enrollmentsError }}</span>
+      </div>
+      <highcharts-chart
+        *ngIf="!isEnrollmentsLoading && !enrollmentsError"
+        [Highcharts]="Highcharts"
+        [options]="Linecharts"
+        class="w-full"
+        style="height: 400px; display: block"
+      >
+      </highcharts-chart>
+    </div>
 
-    <highcharts-chart
-      [Highcharts]="Highcharts"
-      [options]="chartOptions"
-      class="w-full md:w-[48%]"
-      style="height: 400px; display: block;">
-    </highcharts-chart>
-  
-
+    <!-- Users Chart -->
+    <div class="w-full md:w-[48%]">
+      <div *ngIf="isUsersLoading" class="h-[400px] flex items-center justify-center bg-white shadow-md rounded-lg">
+        <svg
+          class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+      <div *ngIf="usersError" class="h-[400px] flex items-center justify-center bg-white shadow-md rounded-lg">
+        <span class="text-red-500">{{ usersError }}</span>
+      </div>
+      <highcharts-chart
+        *ngIf="!isUsersLoading && !usersError"
+        [Highcharts]="Highcharts"
+        [options]="chartOptions"
+        class="w-full"
+        style="height: 400px; display: block"
+      >
+      </highcharts-chart>
+    </div>
   </div>
-   
-
 
   <div class="flex flex-wrap justify-around gap-4 mb-10">
     <!-- Enrollments Table -->
     <div class="w-full md:w-[48%]">
       <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
         <table class="table-auto w-full text-left border-collapse border border-gray-200 text-[15px]">
-          <caption class="text-xl font-semibold text-gray-800 mb-4 caption-top">Latest Enrollments</caption>
+          <caption class="text-xl font-semibold text-gray-800 mb-4 caption-top">
+            Latest Enrollments
+          </caption>
           <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
             <tr>
               <th class="px-4 py-3 border-b border-gray-200">Student</th>
@@ -55,23 +206,56 @@
               <th class="px-4 py-3 border-b border-gray-200">Date</th>
             </tr>
           </thead>
-        
           <tbody class="text-gray-600">
-            <tr *ngFor="let item of enrollmentsWithNames"  class="hover:bg-gray-50 transition duration-200">
-              <td  class="px-4 py-3 border-b border-gray-200">{{ item.userName }}</td>
-              <td  class="px-4 py-3 border-b border-gray-200">{{ item.courseName }}</td>
-              <td  class="px-4 py-3 border-b border-gray-200">{{ item.enrolledAt | date: 'MM/dd/yyyy' }}</td>
-            
+            <tr *ngIf="isEnrollmentsLoading">
+              <td colspan="3" class="px-4 py-3 text-center">
+                <svg
+                  class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </td>
+            </tr>
+            <tr *ngIf="enrollmentsError">
+              <td colspan="3" class="px-4 py-3 text-center text-red-500">
+                {{ enrollmentsError }}
+              </td>
+            </tr>
+            <tr *ngFor="let item of enrollmentsWithNames" class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">{{ item.userName }}</td>
+              <td class="px-4 py-3 border-b border-gray-200">{{ item.courseName }}</td>
+              <td class="px-4 py-3 border-b border-gray-200">{{ item.enrolledAt | date: 'MM/dd/yyyy' }}</td>
+            </tr>
+            <tr *ngIf="!isEnrollmentsLoading && !enrollmentsError && !enrollmentsWithNames?.length">
+              <td colspan="3" class="px-4 py-3 text-center text-gray-500">No enrollments found</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Courses Table -->
+    <!-- Latest Courses Table -->
     <div class="w-full md:w-[48%]">
       <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4">
         <table class="table-auto w-full text-left border-collapse border border-gray-200 text-[15px]">
-          <caption class="text-xl font-semibold text-gray-800 mb-4 caption-top">Latest Courses</caption>
+          <caption class="text-xl font-semibold text-gray-800 mb-4 caption-top">
+            Latest Courses
+          </caption>
           <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
             <tr>
               <th class="px-4 py-3 border-b border-gray-200">Instructors</th>
@@ -79,13 +263,44 @@
               <th class="px-4 py-3 border-b border-gray-200">Date</th>
             </tr>
           </thead>
-          <tbody   class="text-gray-600">
-            <tr  *ngFor="let item of latestCoursesWithInstructors"  class="hover:bg-gray-50 transition duration-200">
-              <td class="px-4 py-3 border-b border-gray-200">{{item.instructorName}}</td>
-              <td class="px-4 py-3 border-b border-gray-200">{{item.courseName}}</td>
+          <tbody class="text-gray-600">
+            <tr *ngIf="isLatestCoursesLoading">
+              <td colspan="3" class="px-4 py-3 text-center">
+                <svg
+                  class="animate-spin h-16 w-16 text-indigo-600 mx-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </td>
+            </tr>
+            <tr *ngIf="latestCoursesError">
+              <td colspan="3" class="px-4 py-3 text-center text-red-500">
+                {{ latestCoursesError }}
+              </td>
+            </tr>
+            <tr *ngFor="let item of latestCoursesWithInstructors" class="hover:bg-gray-50 transition duration-200">
+              <td class="px-4 py-3 border-b border-gray-200">{{ item.instructorName }}</td>
+              <td class="px-4 py-3 border-b border-gray-200">{{ item.courseName }}</td>
               <td class="px-4 py-3 border-b border-gray-200">{{ item.createdAt | date: 'MM/dd/yyyy' }}</td>
             </tr>
-    
+            <tr *ngIf="!isLatestCoursesLoading && !latestCoursesError && !latestCoursesWithInstructors?.length">
+              <td colspan="3" class="px-4 py-3 text-center text-gray-500">No courses found</td>
+            </tr>
           </tbody>
         </table>
       </div>
