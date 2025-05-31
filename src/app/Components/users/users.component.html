@@ -6,7 +6,7 @@
     >
       <div class="bg-white p-6 font-bold rounded-lg border border-blue-100">
         <div class="text-black text-2xl mb-2">Total Users</div>
-        <div class="text-3xl font-bold text-gray-800">{{ users?.length }}</div>
+        <div class="text-3xl font-bold text-gray-800">{{ users.length }}</div>
       </div>
 
       <div class="bg-white p-6 rounded-lg border border-green-100">
@@ -163,7 +163,7 @@
             </div>
           </td>
         </tr>
-        } @if(users?.length == 0) {
+        } @if(users.length == 0) {
         <tr>
           <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
             No users found.

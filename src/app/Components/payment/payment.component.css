@@ -1,1 +1,113 @@
 /* No additional styles needed as Tailwind CSS is used */
+
+:host {
+  display: block;
+}
+
+.mat-mdc-card {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  box-shadow: 0 4px 6px -1px rgb(37 99 235 / 0.2) !important;
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  box-shadow: 0 4px 6px -1px rgb(5 150 105 / 0.2) !important;
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+  box-shadow: 0 4px 6px -1px rgb(234 88 12 / 0.2) !important;
+}
+
+.mat-mdc-card-content {
+  padding: 16px !important;
+}
+
+.mat-mdc-form-field {
+  margin-bottom: 0 !important;
+}
+
+/* Make form field background white */
+.mat-mdc-text-field-wrapper {
+  background-color: white !important;
+  border-radius: 4px !important;
+}
+
+.mat-mdc-table {
+  width: 100%;
+  background: transparent !important;
+}
+
+.mat-mdc-row:nth-child(even) {
+  background: #f7f9fb;
+}
+
+.mat-mdc-row:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600 !important;
+  color: #222 !important;
+  font-size: 15px !important;
+  padding: 16px !important;
+  background-color: #fafafa !important;
+}
+
+.mat-mdc-cell {
+  padding: 14px !important;
+  color: #444 !important;
+  font-size: 14px !important;
+  vertical-align: middle !important;
+}
+
+.mat-mdc-icon-button {
+  --mat-mdc-button-persistent-ripple-color: currentColor;
+  --mat-mdc-button-ripple-color: currentColor;
+}
+
+/* Loading spinner color override */
+.mat-spinner circle {
+  stroke: #1976d2;
+}
+
+/* Export button icon alignment */
+button[mat-raised-button] .mat-icon {
+  margin-right: 8px;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  vertical-align: middle;
+}
+
+/* Status colors */
+.status-completed {
+  color: #2e7d32;
+}
+
+.status-pending {
+  color: #ed6c02;
+}
+
+/* Responsive table container */
+.overflow-x-auto {
+  margin: 0 -16px;
+  padding: 0 16px;
+}
+
+@media (max-width: 768px) {
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 12px !important;
+    font-size: 13px !important;
+  }
+
+  .mat-mdc-card-content {
+    padding: 12px !important;
+  }
+}
