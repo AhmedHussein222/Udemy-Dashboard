@@ -1,9 +1,17 @@
 export interface Ienrollment {
     completed:boolean;
-    course_id:string;
-    enrolledAt:Date;
-    enrollmentId:string;
-    payment_status:boolean;
-    progress:number;
-    user_id:string;
+    courses:[
+    {
+        completed_lessons:string[];
+        enrolled_at:Date;
+        id:string;
+        last_accessed:Date;
+        progress:number;
+        thumbnail:string;
+        title:string;
+
+    }
+    ]
+ timestamp: Date;
+    user_id: string;
 }

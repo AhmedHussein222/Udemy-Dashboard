@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import Swal from 'sweetalert2';
 import { ICategory } from '../../Models/icategory';
 import { CategoryService } from '../../Services/category.service';
 import { CategoryDialogComponent } from './category-dialog/category-dialog.component';
@@ -29,7 +29,6 @@ export class CategoryComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private categoryService: CategoryService
   ) {}
 
@@ -45,13 +44,13 @@ export class CategoryComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.snackBar.open(
-          'An error occurred while loading categories',
-          'Close',
-          {
-            duration: 3000,
-          }
-        );
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while loading categories',
+          timer: 3000,
+          showConfirmButton: false,
+        });
         this.loading = false;
       },
     });
@@ -68,18 +67,24 @@ export class CategoryComponent implements OnInit {
         this.categoryService.create(result).subscribe({
           next: (newCategory) => {
             this.categories.push(newCategory);
-            this.snackBar.open('Category added successfully', 'Close', {
-              duration: 3000,
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Category added successfully',
+              timer: 2000,
+              showConfirmButton: false,
+              position: 'top-end',
+              toast: true,
             });
           },
           error: () => {
-            this.snackBar.open(
-              'An error occurred while adding the category',
-              'Close',
-              {
-                duration: 3000,
-              }
-            );
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'An error occurred while adding the category',
+              timer: 3000,
+              showConfirmButton: false,
+            });
           },
         });
       }
@@ -105,18 +110,22 @@ export class CategoryComponent implements OnInit {
                 category_id: updatedCategory.id,
               };
             }
-            this.snackBar.open('Category updated successfully', 'Close', {
-              duration: 3000,
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Category updated successfully',
+              timer: 2000,
+              showConfirmButton: false,
             });
           },
           error: () => {
-            this.snackBar.open(
-              'An error occurred while updating the category',
-              'Close',
-              {
-                duration: 3000,
-              }
-            );
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'An error occurred while updating the category',
+              timer: 3000,
+              showConfirmButton: false,
+            });
           },
         });
       }
@@ -124,26 +133,41 @@ export class CategoryComponent implements OnInit {
   }
 
   deleteCategory(category: ICategory): void {
-    if (confirm('Are you sure you want to delete this category?')) {
-      this.categoryService.delete(category.category_id).subscribe({
-        next: () => {
-          this.categories = this.categories.filter(
-            (c) => c.category_id !== category.category_id
-          );
-          this.snackBar.open('Category deleted successfully', 'Close', {
-            duration: 3000,
-          });
-        },
-        error: () => {
-          this.snackBar.open(
-            'An error occurred while deleting the category',
-            'Close',
-            {
-              duration: 3000,
-            }
-          );
-        },
-      });
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will delete the category permanently!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.categoryService.delete(category.category_id).subscribe({
+          next: () => {
+            this.categories = this.categories.filter(
+              (c) => c.category_id !== category.category_id
+            );
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Category deleted successfully',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          },
+          error: () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'An error occurred while deleting the category',
+              timer: 3000,
+              showConfirmButton: false,
+            });
+          },
+        });
+      }
+    });
   }
 }
