@@ -1,12 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import {FormControl,FormGroup,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { Chart, ChartModule } from 'angular-highcharts';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { Ienrollment } from '../../Models/iuser/ienrollment';
@@ -23,7 +17,6 @@ import { UsersService } from '../../Services/users.service';
 })
 export class UsersComponent {
   private userService = inject(UsersService);
-  // private enrollService = inject(EnrollmentService);
   users!: Iuser[];
   enrollments!: Ienrollment[];
   editform: FormGroup;

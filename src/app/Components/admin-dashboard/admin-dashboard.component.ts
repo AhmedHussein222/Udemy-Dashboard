@@ -12,8 +12,6 @@ import { Courses2Component } from '../courses2/courses2.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { PaymentComponent } from '../payment/payment.component';
 
-// Ensure chart.js is installed: Run `npm install chart.js` in your project directory
-
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,

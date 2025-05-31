@@ -24,7 +24,6 @@ export class DashboardComponent implements OnInit {
   usersLength: number = 0;
   coursesLength: number = 0;
   revenue: number = 0;
-  // latestEnrollments: Ienrollment[] = [];
   enrollmentsWithNames: IenrollmentWithNames[] = [];
   courses: Icourse[] = [];
   averageRating: number = 0;
@@ -46,7 +45,6 @@ export class DashboardComponent implements OnInit {
     private revenueService: RevenueService,
     private ratingService: RatingService
   ) {
-    //Get all users number
     this.usersService.getAll().subscribe((users: Iuser[]) => {
       this.usersLength = users.length;
     });
@@ -59,12 +57,10 @@ export class DashboardComponent implements OnInit {
       ).length;
     });
 
-    //Get all courses number
     this.courseService.getAll('Courses').subscribe((courses: Icourse[]) => {
       this.coursesLength = courses.length;
     });
 
-    //Get all revenue
     this.revenueService.getRevenue().subscribe((total) => {
       this.revenue = total;
     });

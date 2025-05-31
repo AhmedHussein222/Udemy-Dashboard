@@ -22,7 +22,8 @@
   </div>
 
   <!-- Charts Row -->
-  <div class="flex flex-wrap justify-around gap-4 mb-5">
+
+  <div *ngIf="chartOptions && chartOptions.series" class="flex flex-wrap justify-around gap-4 mb-5">
     <highcharts-chart
     [Highcharts]="Highcharts"
     [options]="Linecharts"
