@@ -1,0 +1,192 @@
+<div
+  class="subcategory-container"
+  style="max-width: 700px; margin: 60px auto; padding: 0 20px"
+>
+  <mat-card
+    style="
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    "
+  >
+    <mat-card-title
+      style="
+        padding: 24px 24px 16px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+      "
+    >
+      Subcategory Management
+    </mat-card-title>
+    <mat-card-content style="padding: 0 24px 24px">
+      <div style="margin-bottom: 32px">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Select Category</mat-label>
+          <mat-select
+            [(ngModel)]="selectedCategory"
+            (selectionChange)="onCategorySelect($event.value)"
+          >
+            <mat-option *ngFor="let category of categories" [value]="category">
+              {{ category.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      @if (selectedCategory) {
+      <div
+        *ngIf="loadingSubcategories"
+        style="display: flex; justify-content: center; margin: 32px 0"
+      >
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+      @if (!loadingSubcategories) {
+      <form
+  (ngSubmit)="addSubcategory(subName.value)"
+  style="
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  "
+>
+  <!-- Label and Input Field -->
+  <div style="flex: 1; min-width: 250px;">
+    <label for="subName" style="display: block; font-weight: 500; margin-bottom: 8px;">Subcategory name*</label>
+    <mat-form-field appearance="outline">
+      <input
+        matInput
+        #subName
+        id="subName"
+        required
+        minlength="2"
+        style="padding: 12 0;"
+      />
+      <mat-error *ngIf="subName.value === ''">
+        Subcategory name is required
+      </mat-error>
+      <mat-error
+        *ngIf="subName.value.length > 0 && subName.value.length < 2"
+      >
+        Name must be at least 2 characters
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- Submit Button -->
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    style="min-height: 56px; min-width: 100px;"
+  >
+    Add
+  </button>
+</form>
+
+      <!-- Subcategories List -->
+      <mat-list
+        *ngIf="subcategories.length > 0; else noSubs"
+        style="border-top: 1px solid #e0e0e0"
+      >
+        <mat-list-item
+          *ngFor="let sub of subcategories"
+          style="padding: 16px 0"
+        >
+          <div
+            style="
+              flex: 1;
+              display: flex;
+              align-items: center;
+              gap: 16px;
+              flex-wrap: wrap;
+            "
+          >
+            <ng-container
+              *ngIf="
+                editingSub?.subcategory_id === sub.subcategory_id;
+                else viewMode
+              "
+            >
+              <!-- Edit Mode -->
+              <mat-form-field
+                appearance="outline"
+                style="flex: 1; min-width: 200px; margin: 0"
+              >
+                <mat-label>Edit Name</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="editName"
+                  name="editName"
+                  required
+                />
+              </mat-form-field>
+              <div style="display: flex; gap: 8px">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="saveEdit()"
+                  title="Save"
+                >
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="cancelEdit()"
+                  title="Cancel"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </ng-container>
+
+            <!-- View Mode -->
+            <ng-template #viewMode>
+              <span style="font-weight: 600; font-size: 16px">{{
+                sub.name
+              }}</span>
+              <span style="color: #999; font-size: 14px">({{ sub.slug }})</span>
+              <span style="flex: 1"></span>
+              <div style="display: flex; gap: 8px">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="startEdit(sub)"
+                  title="Edit"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteSub(sub)"
+                  title="Delete"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </mat-list-item>
+      </mat-list>
+
+      <!-- Empty State -->
+      <ng-template #noSubs>
+        <div
+          style="
+            text-align: center;
+            color: #aaa;
+            margin-top: 24px;
+            font-style: italic;
+          "
+        >
+          No subcategories available.
+        </div>
+      </ng-template>
+      } }
+    </mat-card-content>
+  </mat-card>
+</div>

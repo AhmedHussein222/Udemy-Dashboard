@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UnpublishedCoursesService } from '../../Services/unpublished-courses.service';
 import { Icourse } from '../../Models/icourse';
-import { UsersService } from '../../Services/users.service';
 
 @Component({
   selector: 'app-courses',

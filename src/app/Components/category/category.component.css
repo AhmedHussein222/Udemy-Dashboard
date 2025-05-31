@@ -1,0 +1,35 @@
+.category-container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.category-card {
+  height: 100%;
+}
+
+.category-card mat-card-header {
+  margin-bottom: 10px;
+}
+
+.category-card mat-card-content {
+  margin-bottom: 15px;
+}
+
+.category-card mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 8px;
+}

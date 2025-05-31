@@ -1,0 +1,40 @@
+<div class="category-container mt-5 pt-5">
+  <div class="header">
+    <h2>Category Management</h2>
+    <button mat-raised-button color="primary" (click)="openAddCategoryDialog()">
+      <mat-icon>add</mat-icon>
+      Add New Category
+    </button>
+  </div>
+
+  @if (loading) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div class="categories-grid">
+    <mat-card *ngFor="let category of categories" class="category-card">
+      <mat-card-header>
+        <mat-card-title>{{ category.name }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ category.slug }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="editCategory(category)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteCategory(category)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  @if (!loading && categories.length === 0) {
+  <div class="text-center text-gray-500 mt-10">No categories available.</div>
+  }
+</div>

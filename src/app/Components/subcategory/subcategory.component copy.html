@@ -1,0 +1,108 @@
+<div class="subcategory-container" style="max-width: 600px; margin: 40px auto">
+  <mat-card>
+    <mat-card-title>Subcategory Management</mat-card-title>
+    <mat-card-content>
+      <div style="margin-bottom: 24px">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Select Category</mat-label>
+          <mat-select
+            [(ngModel)]="selectedCategory"
+            (selectionChange)="onCategorySelect($event.value)"
+          >
+            <mat-option *ngFor="let category of categories" [value]="category">
+              {{ category.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <ng-container *ngIf="selectedCategory">
+        <form
+          (ngSubmit)="addSubcategory(subName.value)"
+          style="
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 20px;
+          "
+        >
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Subcategory name</mat-label>
+            <input matInput #subName required />
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Add</button>
+        </form>
+
+        <mat-list *ngIf="subcategories.length > 0; else noSubs">
+          <mat-list-item *ngFor="let sub of subcategories">
+            <div style="flex: 1; display: flex; align-items: center">
+              <ng-container
+                *ngIf="
+                  editingSub?.subcategory_id === sub.subcategory_id;
+                  else viewMode
+                "
+              >
+                <mat-form-field
+                  appearance="fill"
+                  class="full-width"
+                  style="margin: 0"
+                >
+                  <input
+                    matInput
+                    [(ngModel)]="editName"
+                    name="editName"
+                    required
+                  />
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="saveEdit()"
+                  title="Save"
+                >
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="cancelEdit()"
+                  title="Cancel"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </ng-container>
+              <ng-template #viewMode>
+                <span style="font-weight: 500">{{ sub.name }}</span>
+                <span style="color: #888; margin-left: 8px"
+                  >({{ sub.slug }})</span
+                >
+                <span style="flex: 1 1 auto"></span>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="startEdit(sub)"
+                  title="Edit"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteSub(sub)"
+                  title="Delete"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </ng-template>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <ng-template #noSubs>
+          <div style="text-align: center; color: #888; margin-top: 16px">
+            No subcategories available.
+          </div>
+        </ng-template>
+      </ng-container>
+    </mat-card-content>
+  </mat-card>
+</div>
