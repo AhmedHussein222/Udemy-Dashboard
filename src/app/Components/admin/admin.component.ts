@@ -628,9 +628,8 @@ export class AdminComponent implements OnInit, OnDestroy {
       img.src = 'assets/images/default_profile.png';
     }
   }
-
   onPhotoError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/images/default_profile.png';
+    img.src = '/close-up-shape.svg';
   }
 }
