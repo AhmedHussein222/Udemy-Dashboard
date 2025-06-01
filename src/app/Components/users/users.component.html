@@ -88,9 +88,9 @@
               <div class="relative">
                 <img
                   class="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
-                  src="{{ user.profile_picture }}"
-                  alt="User Profile Picture"
-                  onerror="this.onerror=null; this.src='assets/images/default_profile.png'"
+                  [src]="user.profile_picture || '/close-up-shape.svg'"
+                  [alt]="user.first_name + ' ' + user.last_name"
+                  onerror="this.src='/close-up-shape.svg'"
                 />
                 <span
                   class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full"
