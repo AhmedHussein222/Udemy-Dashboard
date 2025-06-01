@@ -15,10 +15,9 @@
       >
         <img
           class="w-8 h-8 rounded-full mr-2"
-          [src]="
-            currentUser?.profile_picture || 'assets/images/default_profile.png'
-          "
-          alt="User Profile"
+          [src]="currentUser?.profile_picture || '/close-up-shape.svg'"
+          [alt]="currentUser?.first_name + ' profile'"
+          onerror="this.src='/close-up-shape.svg'"
         />
         <span class="text-gray-700">{{ currentUser?.first_name }}</span>
       </button>

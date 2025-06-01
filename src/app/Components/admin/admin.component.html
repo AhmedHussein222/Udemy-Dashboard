@@ -35,12 +35,9 @@
                   class="w-full h-full rounded-full overflow-hidden flex items-center justify-center"
                 >
                   <img
-                    [src]="
-                      currentUser.profile_picture ||
-                      'assets/images/default_profile.png'
-                    "
+                    [src]="currentUser.profile_picture || '/close-up-shape.svg'"
                     class="w-full h-full object-contain"
-                    alt="Profile Picture"
+                    [alt]="currentUser.first_name + ' profile picture'"
                     (error)="onPhotoError($event)"
                   />
                 </div>
@@ -568,13 +565,11 @@
         <tbody class="bg-white divide-y divide-gray-200">
           <tr *ngFor="let admin of adminUsers">
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <img
+              <div class="flex items-center">                <img
                   class="h-10 w-10 rounded-full"
-                  [src]="
-                    admin.profile_picture || 'assets/images/default_profile.png'
-                  "
+                  [src]="admin.profile_picture || '/close-up-shape.svg'"
                   [alt]="admin.first_name + ' ' + admin.last_name"
+                  onerror="this.src='/close-up-shape.svg'"
                 />
                 <div class="ml-4">
                   <div class="text-sm font-medium text-gray-900">
