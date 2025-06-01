@@ -97,12 +97,14 @@ export class UsersService {
       })()
     );
   }
-
+  /**
+  addedIf auth deletion fails, the user is still removed from Firestore
+   */
   deleteUser(userId: string): Observable<void> {
     return from(
       (async () => {
         try {
-          // First get the user data from Firestore
+          // Step 1: Get user data from Firestore to obtain email and password
           const userRef = doc(db, 'Users', userId);
           const userDoc = await getDoc(userRef);
 
@@ -114,21 +116,22 @@ export class UsersService {
           const userEmail = userData['email'];
           const userPassword = userData['password'];
 
-          // Delete from Firestore first
+          // Step 2: Delete from Firestore first to ensure at least this succeeds
           await deleteDoc(userRef);
 
-          // Try to delete from Authentication if we have credentials
+          // Step 3: Attempt to delete from Authentication if we have credentials
           if (userEmail && userPassword) {
             const auth = getAuth();
             try {
-              // We need to sign in as the user to delete them from Auth
+              // Firebase requires the user to be signed in to delete their account
               await signInWithEmailAndPassword(auth, userEmail, userPassword);
               if (auth.currentUser) {
                 await deleteUser(auth.currentUser);
               }
             } catch (authError) {
+              // Log but don't throw - user is already deleted from Firestore
+              // This can happen if password was changed or user uses different auth method
               console.error('Error deleting from Authentication:', authError);
-              // We don't throw here as the user is already deleted from Firestore
             }
           }
         } catch (error) {
