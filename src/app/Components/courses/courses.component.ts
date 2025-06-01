@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UnpublishedCoursesService } from '../../Services/unpublished-courses.service';
+import { Component, OnInit } from '@angular/core';
+import Swal from 'sweetalert2';
 import { Icourse } from '../../Models/icourse';
+import { UnpublishedCoursesService } from '../../Services/unpublished-courses.service';
 
 @Component({
   selector: 'app-courses',
@@ -13,49 +14,90 @@ export class CoursesComponent implements OnInit {
   courses: Icourse[] = [];
   selectedCourse: Icourse | null = null;
   showModal = false;
- 
 
-  constructor(
-    private courseService: UnpublishedCoursesService,
-  
-  ){}
+  constructor(private courseService: UnpublishedCoursesService) {}
 
   ngOnInit(): void {
-  
     this.loadCourses();
   }
 
- 
   loadCourses(): void {
-    this.courseService.getUnpublishedCourses().subscribe(course => {
+    this.courseService.getUnpublishedCourses().subscribe((course) => {
       this.courses = course;
       console.log('Unpublished courses:', this.courses);
-      
     });
-    
   }
 
- 
   accept(courseId: string) {
-    this.courseService.acceptCourse(courseId).subscribe(() => {
-      console.log(`Course ${courseId} is now published`);
-      this.loadCourses();
-      this.closePreview(); 
-    }, (error) => {
-      console.error('Error publishing course:', error);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to accept this course?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, accept it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.courseService.acceptCourse(courseId).subscribe(
+          () => {
+            Swal.fire(
+              'Accepted!',
+              'Course has been accepted successfully.',
+              'success'
+            );
+            this.loadCourses();
+            this.closePreview();
+          },
+          (error) => {
+            Swal.fire(
+              'Error!',
+              'An error occurred while accepting the course.',
+              'error'
+            );
+            console.error('Error publishing course:', error);
+          }
+        );
+      }
     });
   }
   delete(courseId: string) {
-  this.courseService.deleteCourse(courseId).subscribe(() => {
-    console.log(`Course ${courseId} deleted successfully`);
-    this.loadCourses();
-    this.closePreview(); 
-  }, error => {
-    console.error('Error deleting course: ', error);
-  });
-}
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.courseService.deleteCourse(courseId).subscribe(
+          () => {
+            Swal.fire(
+              'Deleted!',
+              'Course has been deleted successfully.',
+              'success'
+            );
+            this.loadCourses();
+            this.closePreview();
+          },
+          (error) => {
+            Swal.fire(
+              'Error!',
+              'An error occurred while deleting the course.',
+              'error'
+            );
+            console.error('Error deleting course: ', error);
+          }
+        );
+      }
+    });
+  }
 
-preview(course: Icourse) {
+  preview(course: Icourse) {
     this.selectedCourse = course;
     this.showModal = true;
   }
@@ -64,5 +106,4 @@ preview(course: Icourse) {
     this.showModal = false;
     this.selectedCourse = null;
   }
-
- }
+}
