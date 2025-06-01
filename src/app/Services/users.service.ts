@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { deleteUser, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import {
   collection,
   deleteDoc,
@@ -100,8 +101,40 @@ export class UsersService {
   deleteUser(userId: string): Observable<void> {
     return from(
       (async () => {
-        const userRef = doc(db, 'Users', userId);
-        await deleteDoc(userRef);
+        try {
+          // First get the user data from Firestore
+          const userRef = doc(db, 'Users', userId);
+          const userDoc = await getDoc(userRef);
+
+          if (!userDoc.exists()) {
+            throw new Error('User not found in Firestore');
+          }
+
+          const userData = userDoc.data();
+          const userEmail = userData['email'];
+          const userPassword = userData['password'];
+
+          // Delete from Firestore first
+          await deleteDoc(userRef);
+
+          // Try to delete from Authentication if we have credentials
+          if (userEmail && userPassword) {
+            const auth = getAuth();
+            try {
+              // We need to sign in as the user to delete them from Auth
+              await signInWithEmailAndPassword(auth, userEmail, userPassword);
+              if (auth.currentUser) {
+                await deleteUser(auth.currentUser);
+              }
+            } catch (authError) {
+              console.error('Error deleting from Authentication:', authError);
+              // We don't throw here as the user is already deleted from Firestore
+            }
+          }
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          throw error;
+        }
       })()
     );
   }

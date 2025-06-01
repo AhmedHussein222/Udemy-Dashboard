@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import {FormControl,FormGroup,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Chart, ChartModule } from 'angular-highcharts';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { Ienrollment } from '../../Models/iuser/ienrollment';
@@ -131,8 +137,6 @@ export class UsersComponent {
     }).then((result: SweetAlertResult) => {
       if (result.isConfirmed) {
         this.confirmDelete(user);
-        this.successModal('deleted');
-        this.refreshUsers();
       }
     });
   }
@@ -140,15 +144,21 @@ export class UsersComponent {
   confirmDelete(user: Iuser) {
     if (!user.user_id) {
       this.errorModal('User ID is missing');
-
       return;
     }
+
     this.userService.deleteUser(user.user_id).subscribe({
       next: () => {
-        return true;
+        // Remove user from local array
+        this.users = this.users.filter((u) => u.user_id !== user.user_id);
+        // Show success message
+        this.successModal('deleted');
+        // Refresh the user list
+        this.refreshUsers();
       },
       error: (error) => {
-        this.errorModal(error.message);
+        console.error('Error deleting user:', error);
+        this.errorModal(error.message || 'Failed to delete user');
       },
     });
   }
